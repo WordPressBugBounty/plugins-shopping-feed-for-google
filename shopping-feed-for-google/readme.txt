@@ -1,10 +1,10 @@
-=== Shopping Feed for Google, Microsoft and Multiple Marketing Platforms by Simprosys  ===
+=== Product Feed for Google Shopping, Microsoft Ads and 40+ Channels for WooCommerce Merchant  ===
 Contributors: Simprosys
 Tags: Google Shopping Feed, Facebook Catalog, Microsoft Feed, WooCommerce Product Feed, Performance Max Campaign.
 Requires at least: 4.4
-Tested up to: 6.6.1
+Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 2.8
+Stable tag: 2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -307,6 +307,11 @@ Yes, you can append a UTM parameter from our plugin to track the conversion sour
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 2.9 =
+* PHP 8.1 deprecation bug fixed
+* PHP 8.2 Compatible 
+* Native GTIN fetching functionality added 
+
 = 2.8 = 
 * New Compatible Plugin Added for GTIN: WooCommerce UPC, EAN, and ISBN.
 * Bug Fix for GA4 Tracking.

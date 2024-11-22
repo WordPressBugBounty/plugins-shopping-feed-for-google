@@ -127,7 +127,7 @@ function registerStoreGSF(){
 function isDependencyAvailableGSF(){
     $active_plugins = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
 
-    if ( in_array( 'woocommerce/woocommerce.php', $active_plugins ) ) {
+    if (is_array($active_plugins) && in_array( 'woocommerce/woocommerce.php', $active_plugins ) ) {
       return true;
     } else {
       deactivate_plugins( plugin_basename( __FILE__ ) );
@@ -154,7 +154,7 @@ function isUserLoggedInGSF() {
 }
 
 function addGoogleVerificationTokenGSF() {
-  $google_token_string = stripslashes(get_option('wp_gsf_google_token_string', null));
+  $google_token_string = stripslashes(get_option('wp_gsf_google_token_string', ''));//Updated by DJ @12/11/24 old:null, php8.1 deprecation
   if ( !empty($google_token_string) ) {
     printf($google_token_string);
   }
@@ -199,7 +199,7 @@ function pluginDeactivateGSF(){
 
 function isCheckWoocommerceAvailableGSF(){
     $active_plugins = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
-    if ( in_array( 'woocommerce/woocommerce.php', $active_plugins ) ) {
+    if (is_array($active_plugins) && in_array( 'woocommerce/woocommerce.php', $active_plugins ) ) {
       return true;
     } else {
       return false;
@@ -964,3 +964,13 @@ function isEnableGSFAdvancedFeature($gsf_advanced_option = ''){
       return false;
   }
 }
+
+/*****************************************************************************/
+
+function initialize_admin_notifications() {
+	$client              = new WP_GSF_HttpClient();
+    $resultsData         = $client->callAPI("get-notifications") ?? '';
+    $admin_notifications = new WP_GSF_Admin_Notifications($resultsData);
+}
+
+add_action('init', 'initialize_admin_notifications');

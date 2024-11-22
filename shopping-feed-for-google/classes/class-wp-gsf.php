@@ -7,6 +7,7 @@ class WP_GSF_Controller {
 	protected $loader;
 	protected $plugin_name;
 	protected $version;
+	protected $dependency_checker;
 
 	public function __construct() {
 		if ( defined( 'WP_GSF_PLUGIN_VERSION' ) ) {
@@ -24,6 +25,7 @@ class WP_GSF_Controller {
 	    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-activator.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-loader.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-rest-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-admin-notification.php';
 		$this->loader = new WP_GSF_Loader();
 		$Custom_Rest = new WP_GSF_Rest_Controller();
 		$Custom_Rest->callHooksGSF();

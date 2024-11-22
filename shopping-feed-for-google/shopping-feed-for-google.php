@@ -1,10 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
-Plugin Name: Shopping Feed for Google, Microsoft and Multiple Marketing Platforms by Simprosys
+Plugin Name: Simprosys Product Feed For WooCommerce
 Plugin URI: http://wordpress.org/extend/plugins/shopping-feed-for-google/
 Description: Automate real-time product syncing to Google, Microsoft & Facebook Ads from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
-Version: 2.8
+Version: 2.9
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
 */
@@ -52,7 +52,7 @@ function addGoogleConversionTrackingScriptGSF() {
        wp_register_script( 'jquery.min.js', plugin_dir_url(__FILE__).'js/jquery.min.js');
        wp_enqueue_script( 'jquery.min.js' );
     }
-    wp_enqueue_script( 'style', getWpGoogleConversionTrackingScriptGSF(), array ( 'jquery' )); /*Edited by DJ 28/6/21 for enqueue script after jquery.min.js */
+    wp_enqueue_script( 'gsfwc-script', getWpGoogleConversionTrackingScriptGSF(), array ( 'jquery' )); /*Edited by DJ 28/6/21 for enqueue script after jquery.min.js */
 }
 
 if(isWpGoogleConversionTrackingEnableGSF()){

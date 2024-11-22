@@ -91,6 +91,13 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
                         $action     = "manageAdvanceSettings";
                     }
                 break;
+                case 'getOrderDetails':
+                    $start_date = getDataGSF('start_date')?? null;
+                    $end_date   = getDataGSF('end_date')?? null;
+                    $result_with_dates = $this->getGSFOrderData($start_date, $end_date);
+                    return json_encode($result_with_dates);
+                break;
+
                 default:
                     $error   = 1;
                     $message = "Invalid Rest Route";
@@ -106,4 +113,50 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
         );
         return json_encode($response);	
     }
+
+    public function getGSFOrderData($start_date = null, $end_date = null) {
+        // Prepare the arguments array
+        $args = [
+            'limit'        => -1, // To retrieve all orders
+            'status'       => 'completed', // You can change this to any order status you need
+            'meta_key'     => '_created_via', // Meta key for order creation method
+            'meta_value'   => 'checkout' // Orders created via checkout
+        ];
+    
+        // Add the date range if provided
+        if ($start_date && $end_date) {
+            $start_date = date('Y-m-d', strtotime($start_date));
+            $end_date   = date('Y-m-d', strtotime($end_date));
+        } else {
+            $start_date = date('Y-m-d', strtotime('-30 days'));
+            $end_date   = date('Y-m-d');
+        }
+
+        $args['date_created'] = $start_date . '...' . $end_date;
+    
+        // Query the orders
+        $orders = wc_get_orders($args);
+    
+        // Get the count of orders
+        $order_count = count($orders);
+        
+        // Initialize result array
+        $order_data = [];
+
+        // Iterate over the orders to fetch required details
+        foreach ($orders as $order) {
+            $order_data[] = [
+                'order_id'     => $order->get_id(),
+                'order_total'  => $order->get_total(),
+                'order_currency' => $order->get_currency(),
+            ];
+        }
+        
+        // Return the order count and IDs
+        return [
+            'order_count' => $order_count,
+            'order_data'   => $order_data,
+        ];
+    }
+
 }
