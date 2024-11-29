@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 Plugin Name: Simprosys Product Feed For WooCommerce
 Plugin URI: http://wordpress.org/extend/plugins/shopping-feed-for-google/
 Description: Automate real-time product syncing to Google, Microsoft & Facebook Ads from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
-Version: 2.9
+Version: 3.0
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
 */

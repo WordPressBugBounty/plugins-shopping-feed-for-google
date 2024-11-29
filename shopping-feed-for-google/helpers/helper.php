@@ -966,11 +966,11 @@ function isEnableGSFAdvancedFeature($gsf_advanced_option = ''){
 }
 
 /*****************************************************************************/
-
+/*
 function initialize_admin_notifications() {
 	$client              = new WP_GSF_HttpClient();
     $resultsData         = $client->callAPI("get-notifications") ?? '';
     $admin_notifications = new WP_GSF_Admin_Notifications($resultsData);
 }
 
-add_action('init', 'initialize_admin_notifications');
+add_action('init', 'initialize_admin_notifications');*/
