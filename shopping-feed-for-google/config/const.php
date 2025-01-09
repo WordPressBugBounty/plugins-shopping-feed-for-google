@@ -1,8 +1,8 @@
 <?php
-define( 'WP_GSF_PLUGIN_VERSION', '2.9' );
+define( 'WP_GSF_PLUGIN_VERSION', '3.1' );
 define( 'WP_GSF_PLUGIN_NAME', 'Simprosys Product Feed For WooCommerce' ); //updated by DJ @04/06/24 //Changed by DJ 27/01/23
 define( 'WP_GSF_PLUGIN_MENU_NAME', 'Simprosys Product Feed' );//added by DJ @04/06/24
-define( 'WP_GSF_API_URL',"https://gsf-wc.simpshopifyapps.com/v2");
+define( 'WP_GSF_API_URL',"https://gsf-wc.simprosysapps.com");
 define( 'WP_BASE_URL', get_bloginfo('url'));
 define( 'WP_BASE_SITE_URL', get_site_url()); // Change By JG 28/08/2021
 define( 'WP_SITE_URL', site_url()); // Change By JG 28/08/2021

@@ -1,10 +1,10 @@
 === Product Feed for Google Shopping, Microsoft Ads and 40+ Channels for WooCommerce Merchant  ===
 Contributors: Simprosys
-Tags: Google Shopping Feed, Facebook Catalog, Microsoft Feed, WooCommerce Product Feed, Performance Max Campaign.
+Tags: WooCommerce Feed, Google Feed, Product Feed, Pmax Campaign, Tracking 
 Requires at least: 4.4
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 3.0
+Stable tag: 3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,13 +19,15 @@ https://youtu.be/tXS6JhOQusM
 == WHY US FOR PRODUCT FEED? ==
    * Quick feed synchronization in under 30 minutes.
    * User-friendly interface.
-   * Submit feeds for all channels under one plan.
+   * Submit feeds for all channels(Google, Facebook and Microsoft) under one plan.
    * Optimize your feed with guidance from our experienced support team.
-   * Manage campaigns directly from the plugin interface.
+   * Manage Google & Microsoft Pmax campaigns directly from the plugin interface.
    * Manage Google, Facebook, and Microsoft Tracking
-   * Enable GA4 Events Tracking
-   * Google Consent Mode V2
+   * Enable GA4 Events with Refund & Admin Order Tracking
+   * Consent Mode for Google and Microsoft
    * Google Automated Discount
+   * Google Customer Review Integration
+   * Promotion Feed through API
 
 == OUR MISSION ==
 Providing an advanced automated Feed setup with various features to setup and manage their feed on multiple marketing channels and campaigns.
@@ -42,15 +44,15 @@ Providing an advanced automated Feed setup with various features to setup and ma
    * Product submission using **single or multiple categories**
    * Title and Description **Optimization option**
    * Create **Promotion Feed**
-   * Set up **Google Performance Max Campaign and Microsoft Smart Shopping Campaign** in the Plugin
+   * Set up **Google and Microsoft Performance Max Campaigns** in the plugin
    * Google **Dynamic Remarketing Tagging** and **Conversion Tracking** (Supports **Enhanced Conversion** also)
    * **Tracking Tags for Microsoft Ads** within few clicks
    * **Facebook Pixel Tracking** setup
-   * **Google Analytics (GA4)** tracking implementation
+   * **Google Analytics (GA4)** tracking implementation with **Refund and Admin Order Tracking** implementation
    * **Collect Seller Reviews** and display **Seller Badge** on website
-   * **Google-Calculated Delivery Speed Estimates** (Simprosys is Shipping Partner with Google for this feature)
+   * **Google-Calculated Delivery Speed Estimates** through API Integration (Simprosys is Shipping Partner with Google for this feature)
    * **Google Automated Discount** Feature helps to display a discounted price for products based on real-time signals
-   * **Google Consent Mode V2**
+   * **Consent Mode for Google and Microsoft**
 
 == HOW IS IT GOING TO HELP YOU? ==
 
@@ -67,7 +69,7 @@ Checkout the optimization we allow for your product feed:
    * Product Type
    * Google Product Category
    * Product Identifier Management
-   * Custom Labels (Helps you with campaign division and identification)
+   * Custom Labels (Helps you with campaign sub-division)
    * Edit Titles, Descriptions, Product Type and Brand (Directly in the Plugin interface or via CSV)
    * Add GTINs (Directly in the Plugin interface or via CSV). You don’t need to install a separate plugin for it.
 
@@ -79,26 +81,27 @@ To market effectively and as per requirements you need some advanced controls an
     * You have the flexibility to select either all products or specific categories, or even multiple categories, across all integrated platforms within our plugin according to your requirements. 
 
 * **Titles and Description via default WooCommerce field or SEO Plugins**
-    * Enable the option to fetch either default or SEO titles and descriptions for your products within our plugin. Our plugin seamlessly integrates with Yoast SEO, Rank Math SEO, and All-in-One SEO plugins.
+    * Enable the option to fetch either default or SEO titles and descriptions for your products within our plugin. Our plugin seamlessly integrates with **Yoast SEO, Rank Math SEO, All-in-One SEO and SEOPress** plugins.
 
 * **Append Variant Title and Description**
-    * Now, you can choose to submit a product title and description with the variant name/details to your products added in the WooCommerce store if you wish to use the default
+    * Now, you can choose to append and submit a product title and description with the variant name or description to your products added in the WooCommerce store.
 
 * **Default Settings for attributes**
-    * While integrating our plugin you will get to select the default options for Google Product Category, Age Group, Gender, Product condition, and Identifier Management control. If you select/assign a value, it will automatically apply to all your products while fetching them. If you add a new product in your WooCommerce store, these attributes will automatically be assigned in our plugin.
-    * Please note that this default setting works for newly created products or if syncing products for the first time in our plugin. If **products are already synced then this default setting will not apply**.
+    * You can now set default options for **Google Product Category, Age Group, Gender, Product Condition, and Identifier Management** while integration or later. These values will automatically apply to all your products, including newly added ones, during the fetching process.
+    * **Please Note**: Default settings apply only to newly created products or when syncing products for the first time after saving the default values in the plugin.
+   * For products that have already been synced, these default settings will not be applied retroactively.
 
 * **Image Submission Preference & Additional Image Submission**
    * Enable option and submit the second image of your product as the main image for Simple Products within our plugin across all integrated channels. Additionally, with ease submit additional images of a product to all integrated platforms.
 
 * **Sync Regular Price and Sale Price**
-   * Enabling the sale price option allows you to submit both Regular Price and Sale price to respective platforms with sale price end date automatically. Google display the Sale price badge for eligible products in the Shopping ads if you submit both Regular and Sale prices. 
+   * Enabling the sale price option allows you to submit both the **Regular Price and Sale price** to respective platforms with the **sale price effective date** automatically. Google displays the **Sale price badge** for eligible products in the **Shopping ads** if you submit both Regular and Sale prices.
 
 * **Checkout Link Template Attribute**
-   * This option enables you to submit a Checkout Link Template Attribute for your products. This attribute was introduced by Google recently and is available for Free listing products in Google Ads. Customers can click on the product link and it will re-direct on the checkout page of your store.
+   * This option enables you to submit a Checkout Link Template attribute for your products. This attribute is available for Free listing. After submitting checkout link template, customers can click on the link from free listing results and it will directly land on the checkout page of your store. 
 
 * **Tax (VAT/GST) Settings for Facebook and Microsoft**
-   * This option allows you to submit the products with tax or without tax. The option is only available for India and European countries with UK. If your product prices exclude taxes and have set up the Taxes in your WooCommerce store then you add the same % taxes in our plugin to submit your products with tax. Or you can submit products with prices including Taxes. 
+   * This option allows you to submit products with or without tax. It is only available for India, European countries, and the UK. If your product prices exclude taxes and you have set up Taxes in your WooCommerce store, then add the same percentage of taxes in our plugin to submit your product prices with tax. Or you can submit product prices including taxes. 
 
 * **Multiple Country feed submissions for Google**
    * Enable the option to submit multiple countries within our plugin, allowing you to target additional countries and run advertisements on Google to display the ads in more countries.
@@ -110,10 +113,10 @@ To market effectively and as per requirements you need some advanced controls an
    * Select from various options to submit the first variant using our plugin, including the lowest price variant of a product, the date ascending variant, or the first variant according to the WooCommerce menu. 
 
 * **Automated Rules to assign Age Group, Gender, Custom Labels and Shipping labels**
-   * The Automated Rule feature enables you to assign Age Group, Gender, Custom Labels, Shipping Labels, Energy Efficiency Class, and Shipping based on specific criteria such as product title, variant title, tags, brand, and more. It automatically applies to existing or newly added products(based on the criteria selected). 
+   * The **Automated Rule feature** enables you to assign **Age Group, Gender, Custom Labels, Shipping Labels, and Shipping Prices** based on specific criteria such as product title, variant title, tags, brand, and more. It automatically applies to existing or newly added products(based on the criteria selected). 
 
 * **Set automatic exclusion of products via Automated Rules that you do not wish to get submitted in Feed based on certain criteria**
-   * You can exclude products directly within the plugin for all or specific channels by setting up an Automated Feed Rule based on various criteria. Also, exclude products that are out of stock, or based on price and more. 
+   * You can exclude products by setting up an **Automated Feed Rule** for all or specific channels based on various criteria. Also, exclude products that are out of stock, or based on price and more. 
 
 * **Set up Conversion tracking to help you identify where a purchase originated from.**
    * Our plugin helps you to track soft conversions, including actions such as Add to Cart, Begin Checkout, and Purchase, which are crucial for campaign optimization.  
@@ -124,26 +127,27 @@ To market effectively and as per requirements you need some advanced controls an
 * **Enhanced Conversion Tracking for Web will help you with improved Conversion tracking**
    * Enhanced conversion tracking captures first-party conversion data, enhancing the accuracy of Google's conversion tracking capabilities.
 
-* **Create and manage Performance Max Campaign for Google or Smart Shopping Campaign for Microsoft from the plugin interface**
-   * Our plugin allows you to create and link both new and existing campaigns for Google and Microsoft. Additionally, you can seamlessly oversee your Google Pmax campaign and Microsoft Smart Shopping Campaign directly within the plugin.
+* **Create and manage Performance Max Campaign for Google or Microsoft from the plugin interface**
+   * Our plugin allows you to create and link both new and existing **Pmax campaigns for Google and Microsoft**. Additionally, you can seamlessly oversee your Google and Microsoft Pmax campaigns directly within the plugin.
 
 * **Generate Promotions feed for All or Specific products.**
-   * Easily showcase promotions in Google Shopping Ads for all products or specific items by submitting a promotion feed. Generating the promotion feed is a straightforward process, allowing you to competently display promotions for your products within our plugin.
+   * Easily showcase promotions in Google Shopping Ads for all products or specific items through API. Generating the promotion feed is a straightforward process that allows you to display promotions for your products competently within our plugin.
 
 * **Set up Customer Reviews to enable Google to collect seller reviews from your customers and display a seller rating badge on your website.**
-   * With this feature, you can activate the Customer Review badge on your website, enabling you to gather seller reviews from customers who have made purchases from your store. Google may then display these seller ratings in your Shopping ads, enhancing your online presence.
+   * With this feature, you can activate the Customer Review badge on your website, enabling you to gather seller ratings from customers who have made purchases from your store. Google may then display these seller ratings in your Shopping ads and Serach Ads, enhancing your online presence.
 
 * **Enable Google Analytics 4 (GA4) from the plugin interface to avoid complicated coding setup and track visitor interactions.**
-   * This feature enables you to track the GA4 events in your Google Analytics account which helps you to collect events for effective and real-time measurements. 
+   * This feature enables you to track **GA4 events in your Google Analytics account**, which helps you collect events for effective, real-time measurements. Also, helps you to track **Admin and Refund orders** in your Google Analytics account.
 
 * **Google Calculated-Delivery Speed Estimates to show potential customers more accurate estimated delivery time for their locations and gain a competitive advantage.**
-   * This feature allows you to display the average handling time for a product in Shopping ads based on Google’s machine-learning algorithm. Our plugin sends the order data when it is completed and based on order delivery time, Google displays the average handling time in Shopping ads for a product. 
+   * This feature allows you to display the **average handling time for a product in Shopping ads** based on Google’s machine-learning algorithm. Our plugin sends the order data when it is completed(order status in WooCommerce) and based on order delivery time, Google displays the average handling time in Shopping ads for products. 
 
-* **Google Consent Mode V2**
-   * Google Consent Mode V2 is a new method for websites to comply with GDPR and other data privacy regulations when using cookies and collecting visitor data.
+* **Consent Mode for Google and Microsoft**
+   * **Google and Microsoft Consent Mode** is a new method for websites to comply with **GDPR and other data privacy regulations** when using cookies and collecting visitor data.
+
 
 * **Automated Discount feature**
-   * By using automated discounts, you can price your products more effectively in your Shopping ads to drive incremental profit. This feature utilizes multiple real-time signals to help you discount your product prices and display a discounted price on both your Shopping ads and website. It's a great way to optimize your pricing strategy and increase sales.
+   * Automated discounts enable you to optimize product pricing in your Shopping ads, driving incremental profit. This feature leverages real-time signals and Google’s AI to adjust prices dynamically, showcasing discounted prices on both your Shopping ads and website. It's an effective way to enhance your pricing strategy and boost sales.
 
 https://youtu.be/Of5fmfXmE3U
 
@@ -155,6 +159,7 @@ https://youtu.be/Of5fmfXmE3U
 - [WooCommerce UPC, EAN, and ISBN](https://wordpress.org/plugins/woo-add-gtin)
 - Yoast SEO: WooCommerce (Paid)
 - [Custom Product Tabs for WooCommerce](https://wordpress.org/plugins/yikes-inc-easy-custom-woocommerce-product-tabs)
+- WooCommerce Additional Product Identifiers fields
 - [SEOPress - On Site SEO](https://wordpress.org/plugins/wp-seopress)
 - WooCommerce Custom Product Brand
 - [Advanced Shipment Tracking for WooCommerce](https://wordpress.org/plugins/woo-advanced-shipment-tracking/)
@@ -195,8 +200,8 @@ Here is a help doc if you wish to integrate your Microsoft Ads account: [https:/
 Our plugin works on the content API method so any changes made to a product get updated in less than 30 minutes to respective Advertising platforms(Google, Microsoft, or Facebook).
 
 = How often does my product feed get refreshed? =
-- Every time you update your product on a WooCommerce store it gets synced to advertising platforms automatically.
-- In case you don’t make any changes to products, we update them on the 27th day from the last update to make sure they don’t expire.
+- Every time you update your product on your WooCommerce store, it gets synced to advertising platforms automatically. 
+- In case you don’t make any changes to products, we update them using our Content API method. So, as long as our plugin is connected to your marketing channels, we assure you that your products will not expire.
 
 = Why should I subscribe to your plugin? =
 Features that make your product feed optimized & efficient have been put together in this plugin.
@@ -214,7 +219,7 @@ Features that make your product feed optimized & efficient have been put togethe
 - Create Promotion Feed
 - Submit the cheapest variant 
 - Title, Description, Product Type, Brand, GTIN assignment through CSV file
-- Consent ModeV2
+- Consent Mode for Google and Microsoft
 - Experienced support team, and many more.
 
 = Why should I choose an API feed over XML? =
@@ -251,6 +256,7 @@ Yes, our plugin supports multiple plugins. Below are the lists of compatible plu
 - [WooCommerce UPC, EAN, and ISBN](https://wordpress.org/plugins/woo-add-gtin)
 - Yoast SEO: WooCommerce (Paid)
 - [Custom Product Tabs for WooCommerce](https://wordpress.org/plugins/yikes-inc-easy-custom-woocommerce-product-tabs)
+- WooCommerce Additional Product Identifiers fields
 - [SEOPress - On Site SEO](https://wordpress.org/plugins/wp-seopress)
 - WooCommerce Custom Product Brand
 - [Advanced Shipment Tracking for WooCommerce](https://wordpress.org/plugins/woo-advanced-shipment-tracking/)
@@ -307,6 +313,12 @@ Yes, you can append a UTM parameter from our plugin to track the conversion sour
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 3.1 =
+* GA4 Search Event bug fixed
+* Promotion Feed via API for Google
+* Linking/Creating Microsoft Pmax Campaign
+* Microsoft Consent Mode
+
 = 3.0 =
 * Bug Fixed
 
@@ -381,3 +393,13 @@ Yes, you can append a UTM parameter from our plugin to track the conversion sour
 * We strongly suggest upgrading your old version to 1.3
 * Fix issue with WooCommerce API
 * Fix curl timeout error
+
+== Upgrade Notice ==
+
+= 3.1 =
+* [Add] - Linking/Creating Microsoft Pmax Campaign
+* [Add] - Microsoft Consent Mode.
+* [Update] - Promotion Feed via API for Google
+* [Fix] - GA4 Search Event bug fixed
+* [Compatibility] - Tested OK with WordPress 6.7
+* [Compatibility] - Tested OK with WooCommerce 9.5

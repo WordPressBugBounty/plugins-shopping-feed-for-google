@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 Plugin Name: Simprosys Product Feed For WooCommerce
 Plugin URI: http://wordpress.org/extend/plugins/shopping-feed-for-google/
 Description: Automate real-time product syncing to Google, Microsoft & Facebook Ads from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
-Version: 3.0
+Version: 3.1
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
 */
@@ -39,6 +39,10 @@ if(isCheckWoocommerceAvailableGSF()){
     add_action( 'wp_ajax_gsf_wp_action', 'registerStoreGSF' ); //moved here by DJ @04/06/24, If "Woocommerce" is not activate this hooks are useless
     add_action( 'wp_ajax_nopriv_gsf_wp_action', 'registerStoreGSF'); //moved here by DJ @04/06/24, If "Woocommerce" is not activate this hooks are useless
     add_action( 'wp_head', 'addGoogleVerificationTokenGSF' ); //moved here by DJ @04/06/24, If "Woocommerce" is not activate this hooks are useless
+
+    // Display errors if found
+    add_action('admin_notices', 'showAdminErrorsGSF');
+    add_action('show_gsf_admin_notices', 'showAdminErrorsGSF');
 }
 
 add_action( 'upgrader_process_complete', 'upgradePluginVersionGSF', 10, 2 );

@@ -74,10 +74,16 @@ function getWpShopSecretKeyGSF(){
 }
 
 function setErrorMessageGSF($error_message = ""){
+    if(!is_admin()){ return; }
     if(empty($error_message)){
         $error_message = WP_NOTIFICATION_ERROR_MSG;
     }
-    wp_die('<div id="message" class="error"><p>' . $error_message . '</p></div>');
+    // Set error transient if not 
+    $display_errors = get_transient('show_gsf_errors');
+    if(empty($display_errors)){
+      set_transient('show_gsf_errors',$error_message,60);
+      do_action('show_gsf_admin_notices');
+    }
 }
 
 function registerStoreGSF(){
@@ -749,20 +755,9 @@ if(!function_exists('proceedToSearchGSF')){
           $variation_ids  = [];
           $sku            = [];
           $productData    = array();
-          $args           = [ 's' => $search_string, 'limit' => 5 ];
-          $products       = wc_get_products($args);
-          if($products){
-              foreach($products as $value){
-                  $variation_id = isset($value->get_children()[0]) ? $value->get_children()[0] : 0;
-                  array_push($product_ids,$value->get_id());
-                  array_push($variation_ids,$variation_id);
-                  array_push($sku,$value->get_sku());
-              }
-          }
-          if($product_ids){
-              $products_ids = implode(',',$product_ids);
-          }
-  
+          
+          // Remove get product query code (wc_get_products()) from here because in search event we don't need product and variants ID by DK@10-12-2024
+
           $productData['product_id']      = $product_ids;
           $productData['search_string']   = $search_string;
           $productData['variation_id']    = $variation_ids;
@@ -965,12 +960,20 @@ function isEnableGSFAdvancedFeature($gsf_advanced_option = ''){
   }
 }
 
-/*****************************************************************************/
-/*
-function initialize_admin_notifications() {
-	$client              = new WP_GSF_HttpClient();
-    $resultsData         = $client->callAPI("get-notifications") ?? '';
-    $admin_notifications = new WP_GSF_Admin_Notifications($resultsData);
+if ( ! function_exists( 'showAdminErrorsGSF' ) ) {
+  function showAdminErrorsGSF() {
+    // Check if the transient is set
+    $display_errors = get_transient('show_gsf_errors');
+    if ($display_errors && !empty($display_errors)) { ?>
+        <div class="notice notice-error is-dismissible">
+            <p>
+              <?php echo $display_errors; ?>
+            </p>
+        </div>
+        <?php
+        // Delete the transient so the notice is shown only once
+        // delete_transient('show_gsf_errors');
+    }
+  }
 }
-
-add_action('init', 'initialize_admin_notifications');*/
+/*****************************************************************************/
