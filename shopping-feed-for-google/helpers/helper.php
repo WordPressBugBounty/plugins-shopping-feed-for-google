@@ -196,8 +196,10 @@ function pluginActivationRedirectGSF( $plugin ) {
 
 function pluginDeactivateGSF(){
   global $wpdb;
+    $feedback_data = get_transient('gsf_deactivation_feedback') ?? '';
     $shopData = array(
-     'is_activated' => 0
+     'is_activated' => 0,
+     'feedback_data' => $feedback_data
     );
     $client = new WP_GSF_HttpClient();
     $client->callAPI("update-plugin-status",$shopData); 
@@ -974,6 +976,28 @@ if ( ! function_exists( 'showAdminErrorsGSF' ) ) {
         // Delete the transient so the notice is shown only once
         // delete_transient('show_gsf_errors');
     }
+  }
+}
+
+if (! function_exists('gsf_woocommerce_block_do_actions')) {
+  function gsf_woocommerce_block_do_actions($block_content, $block){
+      if (is_admin()) {
+          return $block_content;
+      }
+
+      $blocks = array(
+          'woocommerce/cart',
+          'woocommerce/checkout',
+      );
+      if (in_array($block['blockName'], $blocks)) {
+          ob_start();
+          do_action('gsf_before_' . $block['blockName']);
+          echo $block_content;
+          // do_action( 'gsf_after_' . $block['blockName'] );
+          $block_content = ob_get_contents();
+          ob_end_clean();
+      }
+      return $block_content;
   }
 }
 /*****************************************************************************/

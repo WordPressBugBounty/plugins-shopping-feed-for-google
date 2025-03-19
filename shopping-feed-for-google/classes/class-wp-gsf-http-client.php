@@ -12,7 +12,8 @@ class WP_GSF_HttpClient {
         $parameters['shop_secret']    = getWpShopSecretKeyGSF();
         $parameters['user_info']      = getUserDataGSF();
         $parameters['total_products'] = getWcProductCountsGSF();
-        $parameters['request_detail'] = $_SERVER;//added bu DJ @ 16-12-22 for debug 
+        $parameters['woocommerce_store_id'] = get_option('woocommerce_store_id','');
+        // $parameters['request_detail'] = $_SERVER;//added bu DJ @ 16-12-22 for debug 
         
         $request_url = WP_GSF_API_URL."/".$url;
         $request = wp_remote_post($request_url, array(

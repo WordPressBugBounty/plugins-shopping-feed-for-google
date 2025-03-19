@@ -2,9 +2,10 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 Plugin Name: Simprosys Product Feed For WooCommerce
+Requires Plugins: woocommerce
 Plugin URI: http://wordpress.org/extend/plugins/shopping-feed-for-google/
-Description: Automate real-time product syncing to Google, Microsoft & Facebook Ads from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
-Version: 3.1
+Description: Automate real-time product syncing to Google, Microsoft Advertising & Meta from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
+Version: 3.2
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
 */
@@ -91,6 +92,15 @@ if(isWpGoogleConversionTrackingEnableGSF()){
         add_filter( 'woocommerce_add_cart_item_data', 'addCartItemDataGSF', 10, 3 );
         add_action( 'woocommerce_before_calculate_totals', 'alterCartPriceGSF', 9999 );
     }
+
+    // Conversion tag for Add to cart & Checkout for Woocommerce Blocks by DK@30-01-2025
+    if( has_action( 'render_block' ) ){
+        add_filter( 'render_block', 'gsf_woocommerce_block_do_actions', 9999, 2 );
+        if ( !is_admin() ){
+            add_action('gsf_before_woocommerce/checkout', 'proceedToCheckoutGSF', 10);
+            add_action('gsf_before_woocommerce/cart','productViewItemCartPageGSF');
+        }
+	}
 }
 
 /* added by DJ 6-8-21 for listing page conversion tag ajax call */
