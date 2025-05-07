@@ -2,9 +2,9 @@
 Contributors: Simprosys
 Tags: WooCommerce Feed, Google Feed, Product Feed, Pmax Campaign, Tracking 
 Requires at least: 4.4
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 3.2
+Stable tag: 3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,6 +223,11 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 3.3 =
+* Added support for custom WordPress hooks
+* Enabled AJAX-based tracking for "Add to Cart" events
+* Improved billing and payment data security
+
 = 3.2 =
 * Now supports WooCommerce Cart and Checkout Blocks for tracking
 
@@ -308,6 +313,10 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 * Fix curl timeout error
 
 == Upgrade Notice ==
+
+= 3.3 =
+Added support for custom WordPress hooks
+Enabled AJAX-based tracking for "Add to Cart" events
 
 = 3.2 =
 * Now supports WooCommerce Cart and Checkout Blocks for tracking

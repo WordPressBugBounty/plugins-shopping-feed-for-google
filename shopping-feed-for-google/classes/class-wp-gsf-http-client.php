@@ -24,6 +24,9 @@ class WP_GSF_HttpClient {
         ));
         
         if( is_wp_error( $request ) ) {
+            if($url == 'wc-api/get-notifications'){
+              return [];
+            }
             $error_string = $request->get_error_message();
             $response_headers =  wp_remote_retrieve_headers( $request );
             $body = wp_remote_retrieve_body( $request );

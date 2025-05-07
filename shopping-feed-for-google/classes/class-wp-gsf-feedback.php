@@ -37,7 +37,7 @@ class WP_GSF_Feedback
             'reasons' => $request->get_param('reasons'),
             'feedback' => sanitize_text_field( wp_unslash( $request->get_param('feedback') ) ),
         );
-        set_transient('gsf_deactivation_feedback',json_encode($reason_data),60);
+        set_transient('gsf_deactivation_feedback',json_encode($reason_data),120);
     }
     
     /**

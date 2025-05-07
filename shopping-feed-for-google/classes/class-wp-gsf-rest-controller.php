@@ -97,6 +97,36 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
                     $result_with_dates = $this->getGSFOrderData($start_date, $end_date);
                     return json_encode($result_with_dates);
                 break;
+                case 'createMultipleOptions':
+                    $options_key     = getDataGSF('options_key');
+                    if(strpos($options_key, 'wp_gsf_') === 0){ 
+                        $options_value   = $_REQUEST['options_value'] ?? [];
+                        if(!empty($options_value)){
+							$filter_options = json_decode(stripslashes($options_value),true);
+							if(!empty($filter_options) && is_array($filter_options)){
+								foreach($filter_options as $op_key => $op_value){
+									if(strpos($op_key, 'wp_gsf_') === 0){ 
+										update_option(trim($op_key), trim($op_value));
+									}
+								}
+								$message      = "The wordpress options has been created or updated successfully.";
+	                            $action       = "wordpress option updated";
+							} else {
+								$error      = 1;
+								$message    = "options values are invalid.";
+								$action     = "createMultipleOptions";
+							}
+                        } else {
+                            $error      = 1;
+                            $message    = "options Key & value Empty.";
+                            $action     = "createMultipleOptions";
+                        }
+                    } else {
+                        $error      = 1;
+                        $message    = "Requested unauthorized hook_key change";
+                        $action     = "createMultipleOptions";
+                    }
+                break;
 
                 default:
                     $error   = 1;

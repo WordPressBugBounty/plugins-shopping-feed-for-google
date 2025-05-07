@@ -5,7 +5,7 @@ Plugin Name: Simprosys Product Feed For WooCommerce
 Requires Plugins: woocommerce
 Plugin URI: http://wordpress.org/extend/plugins/shopping-feed-for-google/
 Description: Automate real-time product syncing to Google, Microsoft Advertising & Meta from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
-Version: 3.2
+Version: 3.3
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
 */
@@ -20,8 +20,9 @@ $gsf_plugin->runGSF();
 
 
 if (isset($_POST['wp_gsf_app_redirect'])) {
+    $ref = isset($_POST['wp_gsf_ref']) ? $_POST['wp_gsf_ref'] : '';
     $client = new WP_GSF_HttpClient();
-    $resultsData = $client->callAPI("verify-api-token");
+    $resultsData = $client->callAPI("verify-api-token",['ref' => $ref]);
     
     if(!empty($resultsData) && isset($resultsData->auth_url)){
        header("Location: ".$resultsData->auth_url);
@@ -66,25 +67,28 @@ if(isWpGoogleConversionTrackingEnableGSF()){
     add_action( 'wp_enqueue_scripts', 'addGoogleConversionTrackingScriptGSF' );
     
     /* product Page view Event */
-    add_action('woocommerce_before_single_product','productViewItemGSF');
+    add_action(get_option('wp_gsf_product_page_view','woocommerce_before_single_product'),'productViewItemGSF');
     
     /* Category Page view Event */
-    add_action('woocommerce_before_shop_loop','productViewItemCategoryPageGSF');
+    add_action(get_option('wp_gsf_shop_page_view','woocommerce_before_shop_loop'),'productViewItemCategoryPageGSF');
     
     /* Cart Page view Event */
-    add_action('woocommerce_before_cart','productViewItemCartPageGSF');
+    add_action(get_option('wp_gsf_cart_page_view','woocommerce_before_cart'),'productViewItemCartPageGSF');
     
     /* Home Page view Event */
     add_action('wp','productViewItemHomePageGSF');
     
     // Add to Cart Conversion Tag
-    add_filter( 'woocommerce_add_to_cart', 'addToCartGSF',10,2 );
+    add_filter( 'woocommerce_add_to_cart', 'addToCartGSF',10,5 );
     
-    add_action('woocommerce_before_checkout_form', 'proceedToCheckoutGSF', 10);
+    /* Checkout Page view Event */
+    add_action(get_option('wp_gsf_checkout_page_view','woocommerce_before_checkout_form'), 'proceedToCheckoutGSF', 10);
     
-    add_action('woocommerce_thankyou', 'proceedToPurchaseGSF', 10, 1);
+    add_action(get_option('wp_gsf_thankyou_page_view','woocommerce_thankyou'), 'proceedToPurchaseGSF', 10, 1);
 
     add_filter( 'get_search_query', 'proceedToSearchGSF' );
+
+    add_action('woocommerce_checkout_update_order_meta', 'saveOrderMetaGSF', 10, 1);
     
     if(isEnableGSFAdvancedFeature('gsf_scp_discount')){
         add_filter( 'woocommerce_get_price_html', 'alterPriceDisplayGSF', 9999, 2 );
