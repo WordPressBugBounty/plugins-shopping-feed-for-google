@@ -1117,9 +1117,19 @@ if (! function_exists('gsf_get_variant_title')) {
    *
    */
   function gsf_get_variant_title($variations){
-    if(empty($variations)){
+    if(empty($variations) || !is_array($variations)){
       return '';
     }
+    $variations = array_map(function($attribute) {
+      if( !empty($attribute) && is_a( $attribute, 'WC_Product_Attribute' )  ) {
+        $options = $attribute->get_options();
+        return (!empty($options) && is_array($options)) ? $options[0] : '';
+      }else if( is_object($attribute) ){
+        return '';
+      }else{
+        return (string)$attribute;
+      }
+    }, $variations);
     return rtrim(implode(', ', array_map('ucfirst', array_values($variations))),", ");
   }
 }
