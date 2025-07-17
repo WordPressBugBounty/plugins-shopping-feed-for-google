@@ -179,7 +179,7 @@ function addAdminMenuGSF() {
     $menu_slug = 'shopping-feed-for-google';
     $function = 'menuCallbackGSF';
     $position  = 55.8;
-    $icon_url  = plugin_dir_url( __DIR__ ) . 'assets/img/'.$filename_icon;
+    $icon_url  = plugin_dir_path( __DIR__ ) . 'assets/img/'.$filename_icon;
     $gsf_wc_icon_data = 'data:image/svg+xml;base64,'. base64_encode( file_get_contents( $icon_url ) );
     add_menu_page(  $page_title,  $menu_title,  $capability,  $menu_slug,  $function  ,$gsf_wc_icon_data ,$position );
 }
@@ -377,6 +377,11 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
 
 if ( ! function_exists( 'proceedToCheckoutGSF' ) ) {
   function proceedToCheckoutGSF(){
+
+    if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+      return; // WC not available or cart not initialized
+    }
+
     $gsfwc_cart     = WC()->cart;
     $subtotal_price = $gsfwc_cart->subtotal ? $gsfwc_cart->subtotal : 0; // added by DJ 01/08/23
     $total_price    = $gsfwc_cart->total ? $gsfwc_cart->total : 0;
@@ -543,6 +548,9 @@ if ( ! function_exists( 'productViewItemCartPageGSF' ) ) {
 
   function productViewItemCartPageGSF(){
       
+      if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+          return; // WC not available or cart not initialized
+      }
       $gsfProductCartData    = array();
       $gsfwc_cart     = WC()->cart;
       $subtotal_price = $gsfwc_cart->subtotal ? $gsfwc_cart->subtotal : 0; // added by DJ 01/08/23
@@ -708,7 +716,7 @@ if ( ! function_exists( 'addToCartGSF' ) ) {
     function addToCartGSF( $cart_item_data,$productId,$quantity,$variation_id, $variation ) {
     
       $product = wc_get_product( $productId );
-      $cart_data = WC()->cart->get_cart();
+      $cart_data = (WC()->cart) ? WC()->cart->get_cart() : array();
       $product_price = $product->get_price();
         
       /*if ( $product->is_type('variable') ) {
@@ -767,7 +775,7 @@ function generalAdminNoticeGSF(){
 
 //added by DJ 6-8-21 ajax call for get product detail
 function ajaxRequestGSF() {
-    $product_id=$_REQUEST['gsfwc_product_id'];
+    $product_id=isset($_REQUEST['gsfwc_product_id']) ? $_REQUEST['gsfwc_product_id'] : 0;
     $gsfProductAjaxData = array();
     // Get $product object from product ID
     if(!empty($product_id) && $product_id != 0){ //added by DJ @21/09/23
@@ -797,7 +805,7 @@ function ajaxRequestGSF() {
             $gsfProductAjaxData['variant']= arrayToStrCommaGSF($product->get_children());
             $gsfProductAjaxData['category']= gsf_get_first_category(strip_tags( wc_get_product_category_list( $main_product_id ) ));
             $gsfProductAjaxData['total_price']= $price;
-            $gsfProductAjaxData['test_ip'] = $_SERVER['SERVER_ADDR'];
+            $gsfProductAjaxData['test_ip'] = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '';
             $gsfProductAjaxData['index'] = (is_array($cart_data)) ? count($cart_data) : 0;
             $gsfProductAjaxData['quantity'] = 1;
         }
@@ -898,7 +906,7 @@ function alterPriceDisplayGSF( $price, $product ) {
                 $min_reg_price  = current( $prices['regular_price'] );
                 $min_sale_price = current( $prices['sale_price'] );
                 $gsfwc_product_price = ($product->is_on_sale()) ? $min_sale_price : $min_price ;
-                $price = wc_format_sale_price( wc_price( $gsfwc_product_price), wc_price( $_SESSION['gsfwc_spd_'.$gsfwc_cur_pid] ) );
+                $price = wc_format_sale_price( wc_price( $gsfwc_product_price), wc_price( isset($_SESSION['gsfwc_spd_'.$gsfwc_cur_pid]) ? $_SESSION['gsfwc_spd_'.$gsfwc_cur_pid] : 0 ) );
                 $price = apply_filters( 'woocommerce_variable_price_html', $price . $product->get_price_suffix(), $product );
              }
              
@@ -945,7 +953,7 @@ function tokenVerifyGSF( $product ) {
     $productData['name']       = filterStringsWithHtmlentitiesGSF($product->get_name());
     $productData['currency']   = get_woocommerce_currency();
     $productData['sku']        = $product->get_sku();
-    $productData['token']      = $_REQUEST[ 'pv2' ];
+    $productData['token']      = isset($_REQUEST[ 'pv2' ]) ? $_REQUEST[ 'pv2' ] : '';
     $productData['simp_token'] = isset($_REQUEST['simp_token'])?$_REQUEST['simp_token']:"";
     
     $client      = new WP_GSF_HttpClient();
@@ -989,7 +997,7 @@ function addCartItemDataGSF( $cart_item_data, $product_id, $variation_id ) {
     $gsfwc_exp_time = isset($_SESSION['gsfwc_spd_'.$product_id.'_timeout']) ? $_SESSION['gsfwc_spd_'.$product_id.'_timeout'] : 0 ;
     
     if ( isset($_SESSION['gsfwc_spd_'.$product_id]) && $gsfwc_exp_time > $gsfwc_cur_time) {
-      $cart_item_data['gsfwc_spd']            = $_SESSION['gsfwc_spd_'.$product_id];
+      $cart_item_data['gsfwc_spd']            = isset($_SESSION['gsfwc_spd_'.$product_id]) ? $_SESSION['gsfwc_spd_'.$product_id] : 0;
       $cart_item_data['gsfwc_spd_cart_exp']   = strtotime('+48 hour');
     }
     session_write_close();

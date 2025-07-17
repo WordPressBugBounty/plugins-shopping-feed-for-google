@@ -1,10 +1,10 @@
 === Product Feed for Google Shopping, Microsoft Advertising and 40+ Channels for WooCommerce Merchant  ===
 Contributors: Simprosys
-Tags: WooCommerce Feed, Google Feed, Product Feed, Pmax Campaign, Tracking 
+Tags: WooCommerce Product Feed, Google Feed, Microsoft Advertising Feed, P-Max Campaign, Conversion Tracking
 Requires at least: 4.4
 Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 3.4
+Stable tag: 3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,6 +223,10 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+
+= 3.5 =
+* **Improved visibility**: Easily view product errors, warnings, and feed status directly on WooCommerce product listings and individual product pages.
+
 = 3.4 =
 * Bug Fixed For GA4 tracking
 
@@ -317,17 +321,5 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 
 == Upgrade Notice ==
 
-= 3.3 =
-Added support for custom WordPress hooks
-Enabled AJAX-based tracking for "Add to Cart" events
-
-= 3.2 =
-* Now supports WooCommerce Cart and Checkout Blocks for tracking
-
-= 3.1 =
-* [Add] - Linking/Creating Microsoft Pmax Campaign
-* [Add] - Microsoft Consent Mode.
-* [Update] - Promotion Feed via API for Google
-* [Fix] - GA4 Search Event bug fixed
-* [Compatibility] - Tested OK with WordPress 6.7
-* [Compatibility] - Tested OK with WooCommerce 9.5
+= 3.5 =
+Improved visibility: Easily view product errors, warnings, and feed status directly on WooCommerce product listings and individual product pages.
