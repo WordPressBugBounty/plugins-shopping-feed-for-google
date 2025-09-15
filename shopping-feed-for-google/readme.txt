@@ -4,7 +4,7 @@ Tags: WooCommerce Product Feed, Google Feed, Microsoft Advertising Feed, P-Max C
 Requires at least: 4.4
 Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 3.5
+Stable tag: 3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,6 +223,8 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 3.6 =
+* Added: Simprotips widget in Wordpress dashboard with ads and marketing strategies
 
 = 3.5 =
 * **Improved visibility**: Easily view product errors, warnings, and feed status directly on WooCommerce product listings and individual product pages.

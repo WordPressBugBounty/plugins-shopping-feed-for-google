@@ -28,6 +28,7 @@ class WP_GSF_Controller {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-admin-notification.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-feedback.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-product-status.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-tips.php';
 		new WP_GSF_Feedback();
 		$this->loader = new WP_GSF_Loader();
 		$Custom_Rest = new WP_GSF_Rest_Controller();
