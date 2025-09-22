@@ -14,6 +14,9 @@ $parameters = array(
 'app_status' => 0
 );
 
+delete_metadata( 'post', 0, 'gsfwc_product_feed_status', '', true );
+update_option('wp_gsf_plugin_status_update', "");
+
 //Update Plugin Status
 $client = new WP_GSF_HttpClient();
 $client->callAPI("uninstall-plugin_status",$parameters);
