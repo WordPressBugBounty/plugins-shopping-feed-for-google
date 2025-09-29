@@ -4,7 +4,7 @@ Tags: WooCommerce Product Feed, Google Feed, Microsoft Advertising Feed, P-Max C
 Requires at least: 4.4
 Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 3.7
+Stable tag: 3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,6 +223,10 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 3.8 =
+* Fixed: Google Ads conversion tracking issue for more accurate reporting.  
+* Fixed: discount parameter issue in the Automated Discount feature.
+
 = 3.7 =
 * Fixed: Minor bug fix for Simprosys product status display in WooCommerce product listings.
 
@@ -326,5 +330,6 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 
 == Upgrade Notice ==
 
-= 3.5 =
-Improved visibility: Easily view product errors, warnings, and feed status directly on WooCommerce product listings and individual product pages.
+= 3.8 =
+[Fix] - Fixed Google Ads conversion tracking issue for more accurate reporting.  
+[Fix] - Fixed discount parameter issue in the Automated Discount feature. 

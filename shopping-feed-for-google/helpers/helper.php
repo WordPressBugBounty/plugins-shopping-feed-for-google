@@ -300,11 +300,17 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
         update_post_meta($order_id, 'thankyou_action_done_'.$order_id,1);
         // Get an instance of the WC_Order object
         $order = wc_get_order( $order_id );
+        $total_discount_price = 0;
 
         $gsfProductOrderData = array();  
         // Loop through order items
         $count = 0;
         foreach ( $order->get_items() as $item_id => $item ) {
+          // Added discount amount in purchase event
+          $discount =   $item->get_meta('_simprosys_automated_discount', true);
+          $discount = floatval(str_replace(get_woocommerce_currency_symbol(), '', $discount));
+          $total_discount_price += $discount;
+
           // Get the product object
           $product  = $item->get_product();
           $quantity = $item->get_quantity(); 
@@ -332,7 +338,7 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
           $gsfProductOrderData[$count]['variant']     = arrayToStrCommaGSF($product->get_children());
           $gsfProductOrderData[$count]['variant_title']= !empty($product->get_attributes()) ? gsf_get_variant_title($product->get_attributes()) : '';
           $gsfProductOrderData[$count]['category']    = gsf_get_first_category(strip_tags( wc_get_product_category_list( $gsfProductOrderData[$count]['product_id'] ) ));
-          $gsfProductOrderData[$count]['total_price']	= $product->get_price();
+          // $gsfProductOrderData[$count]['total_price']	= $product->get_price(); // Remove total price from here because we do not need total price for each product 
           $gsfProductOrderData[$count]['index']	= $count;
           $count++;
         }
@@ -341,12 +347,12 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
         $total_tax      = $order->get_total_tax()? $order->get_total_tax() : 0;//added by DJ @29/07/24
         $total_shipping = $order->get_shipping_total()?$order->get_shipping_total(): 0;//added by DJ @29/07/24
         
-        $gsfProductOrderData['order_id']           = $order_id;
+        $gsfProductOrderData['order_id']           = $order->get_id(); // Get ID from $order object
         $gsfProductOrderData['subtotal_price']     = $subtotal_price; // added by DJ 01/08/23
         $gsfProductOrderData['total_price']        = $total_price;
         $gsfProductOrderData['total_tax']          = $total_tax;
         $gsfProductOrderData['total_shipping']     = $total_shipping;
-        $gsfProductOrderData['discount']           = $order->get_discount_total();//$order_id;
+        $gsfProductOrderData['discount']           = $total_discount_price + $order->get_discount_total();//$order_id;
         $gsfProductOrderData['currency']           = get_woocommerce_currency();
         $gsfProductOrderData['order_created_date'] = ($order->get_date_created() != '') ?  $order->get_date_created() : ''; // added by PL @14/09/23 for GCR 
 
@@ -881,7 +887,7 @@ function alterPriceDisplayGSF( $price, $product ) {
     // ONLY IF PRICE NOT NULL
     if ( '' === $product->get_price() ) return $price;
     
-	  session_start();
+	  // session_start();
     date_default_timezone_set('UTC');
     $gsfwc_cur_pid  = ($product->get_parent_id() != 0)?$product->get_parent_id():$product->get_id();
     $gsfwc_cur_time = date('U');
@@ -959,7 +965,7 @@ function tokenVerifyGSF( $product ) {
     $client      = new WP_GSF_HttpClient();
     $resultsData = $client->callAPI("app_proxy_handler_gsf",$productData);
 	
-    session_start(); 
+    // session_start(); 
     if($resultsData){
 		
         if($resultsData->error == 0){
@@ -982,15 +988,17 @@ function addOrderItemMetaGSF( $item_id, $values ) {
     if ( isset($values['gsfwc_spd']) && (isset($values['gsfwc_spd_cart_exp']) && ($values['gsfwc_spd_cart_exp'] > $gsfwc_cur_time))) {
         $_productwc           = wc_get_product( $values['product_id']);
         $price_org            = $_productwc->get_price();
+        $quantity = $values['quantity'];
+
         $gsfwc_discount       = isset($price_org)?($price_org - $values['gsfwc_spd']):$values['gsfwc_spd'];
-        
+        $gsfwc_discount       = $gsfwc_discount * $quantity;
         wc_add_order_item_meta( $item_id, '_simprosys_automated_discount', get_woocommerce_currency_symbol().$gsfwc_discount);
     }
 }
 
 //Add custom cart item data//
 function addCartItemDataGSF( $cart_item_data, $product_id, $variation_id ) {
-    session_start();
+    // session_start();
     date_default_timezone_set('UTC');
     
     $gsfwc_cur_time = date('U');

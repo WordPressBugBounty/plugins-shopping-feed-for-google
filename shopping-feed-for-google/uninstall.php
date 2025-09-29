@@ -16,6 +16,7 @@ $parameters = array(
 
 delete_metadata( 'post', 0, 'gsfwc_product_feed_status', '', true );
 update_option('wp_gsf_plugin_status_update', "");
+update_option('wp_gsf_google_conversion_tracking_script', null);
 
 //Update Plugin Status
 $client = new WP_GSF_HttpClient();

@@ -5,7 +5,7 @@ Plugin Name: Simprosys Product Feed For WooCommerce
 Requires Plugins: woocommerce
 Plugin URI: http://wordpress.org/plugins/shopping-feed-for-google/
 Description: Automate real-time product syncing to Google, Microsoft Advertising & Meta from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
-Version: 3.7
+Version: 3.8
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
 */
@@ -145,4 +145,7 @@ add_filter("plugin_action_links_$plugin", 'pluginSettingsLinkGSF',10,2 );
 //Added by PL @10/09/25 for tips
 add_action( 'plugins_loaded', function() {
     GSF_WC_Tips::init();
+    if (!session_id()) { // Start session if not already started
+        session_start();
+    }
 });

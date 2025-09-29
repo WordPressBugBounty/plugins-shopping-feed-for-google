@@ -14,10 +14,6 @@ if ( ! class_exists( 'WP_GSF_Admin_Notifications' ) ) {
         }
 
         public function enqueue_assets() {
-            $screen = get_current_screen();
-            if ( ! $screen || ! in_array($screen->id,WP_GSF_NOTIFICATION_SCREENS) ) {
-                return;
-            }
 
             wp_enqueue_style( 'gsf-notification-admin-style', plugin_dir_url( __DIR__ ) . 'assets/css/gsf-styles.min.css' );
             wp_enqueue_script( 'gsf-notification-admin-js', plugin_dir_url( __DIR__ ) . 'assets/js/gsf-script.min.js', [], false, true );
@@ -61,10 +57,6 @@ if ( ! class_exists( 'WP_GSF_Admin_Notifications' ) ) {
 
         // Function to display all notifications
         public function display_notifications() {
-            $screen = get_current_screen();
-            if ( ! $screen || ! in_array($screen->id,WP_GSF_NOTIFICATION_SCREENS) ) {
-                return;
-            }
 
             $notifications = $this->get_notifications();   
             if ( empty( $notifications ) || ! is_array( $notifications )) {
