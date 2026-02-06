@@ -165,14 +165,14 @@ function isUserLoggedInGSF() {
 }
 
 function addGoogleVerificationTokenGSF() {
-  $google_token_string = stripslashes(get_option('wp_gsf_google_token_string', ''));//Updated by DJ @12/11/24 old:null, php8.1 deprecation
+  $google_token_string = stripslashes(get_option('wp_gsf_google_token_string', ''));//Updated - php8.1 deprecation
   if ( !empty($google_token_string) ) {
     printf($google_token_string);
   }
 }
 
 function addAdminMenuGSF() {
-    $filename_icon = sanitize_file_name('WC-GSF-icon.svg'); //updated by DJ @04/06/24
+    $filename_icon = sanitize_file_name('WC-GSF-icon.svg'); 
     $page_title = WP_GSF_PLUGIN_NAME;
     $menu_title = WP_GSF_PLUGIN_MENU_NAME;
     $capability = 'manage_options';
@@ -182,10 +182,29 @@ function addAdminMenuGSF() {
     $icon_url  = plugin_dir_path( __DIR__ ) . 'assets/img/'.$filename_icon;
     $gsf_wc_icon_data = 'data:image/svg+xml;base64,'. base64_encode( file_get_contents( $icon_url ) );
     add_menu_page(  $page_title,  $menu_title,  $capability,  $menu_slug,  $function  ,$gsf_wc_icon_data ,$position );
+
+    // Add Submenu
+    add_submenu_page(
+        $menu_slug,
+        'Dashboard',
+        'Dashboard',
+        $capability,
+        $menu_slug,
+        $function
+    );
+    add_submenu_page(
+        $menu_slug,
+        'Manage Products',
+        'Manage Products',
+        $capability,
+        $menu_slug.'#/manage-products',
+        $function
+    );
 }
 
 function menuCallbackGSF() {
-    require_once plugin_dir_path( __DIR__ ) . '/views/shopping-feed-for-google.php';
+    // require_once plugin_dir_path( __DIR__ ) . '/views/shopping-feed-for-google.php';
+    echo '<div id="gsf-wp-root"></div>';
 }
 
 function activatePluginGSF() {
@@ -226,8 +245,8 @@ function getWcProductCountsGSF(){
 }
 
 function upgradePluginVersionGSF( $upgrader_object, $options ) {
-  if ( $options['action'] == 'update' && $options['type'] === 'plugin' && isset($options['plugins']) && is_array($options['plugins']))  { //updated by DJ @10-08-22 added isset
-    if(in_array("shopping-feed-for-google/shopping-feed-for-google.php",$options['plugins'])){   //added by DJ @10-08-22
+  if ( $options['action'] == 'update' && $options['type'] === 'plugin' && isset($options['plugins']) && is_array($options['plugins']))  {
+    if(in_array("shopping-feed-for-google/shopping-feed-for-google.php",$options['plugins'])){
         $client = new WP_GSF_HttpClient();
         $client->callAPI("upgrade-plugin-version");
     }
@@ -244,7 +263,7 @@ function isCheckDefaultPermalinkGSF(){
 }
 
 
-/*  Added google conversion script Code : By JG : 24/03/2021 */
+/*  Added google conversion script */
 
 function getWpGoogleConversionTrackingScriptGSF(){
     return get_option('wp_gsf_google_conversion_tracking_script', null);
@@ -319,7 +338,6 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
           //$gsfProductOrderData[$count]['variant_id']= $variation_id;
           //$gsfProductOrderData[$count]['product_id']= $product->get_id();
           
-          /* edited by DJ 28/6/21 */
           if($product->get_parent_id()==0){
             $gsfProductOrderData[$count]['product_id']	= $item->get_product_id();
             $gsfProductOrderData[$count]['variant_id']	= 0;
@@ -327,7 +345,6 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
             $gsfProductOrderData[$count]['product_id']	= $item->get_product_id();
             $gsfProductOrderData[$count]['variant_id']	= $product->get_id();
           }
-          /* edited by DJ 28/6/21 */
           
           $gsfProductOrderData[$count]['name']        = filterStringsWithHtmlentitiesGSF($product->get_title());
           $gsfProductOrderData[$count]['price']       = $product->get_price();//$product->get_regular_price();
@@ -343,20 +360,20 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
           $count++;
         }
         $total_price    = $order->get_total()? $order->get_total() : 0;
-        $subtotal_price = $order->get_subtotal()? $order->get_subtotal() : 0; // added by DJ 01/08/23
-        $total_tax      = $order->get_total_tax()? $order->get_total_tax() : 0;//added by DJ @29/07/24
-        $total_shipping = $order->get_shipping_total()?$order->get_shipping_total(): 0;//added by DJ @29/07/24
+        $subtotal_price = $order->get_subtotal()? $order->get_subtotal() : 0;
+        $total_tax      = $order->get_total_tax()? $order->get_total_tax() : 0;
+        $total_shipping = $order->get_shipping_total()?$order->get_shipping_total(): 0;
         
         $gsfProductOrderData['order_id']           = $order->get_id(); // Get ID from $order object
-        $gsfProductOrderData['subtotal_price']     = $subtotal_price; // added by DJ 01/08/23
+        $gsfProductOrderData['subtotal_price']     = $subtotal_price;
         $gsfProductOrderData['total_price']        = $total_price;
         $gsfProductOrderData['total_tax']          = $total_tax;
         $gsfProductOrderData['total_shipping']     = $total_shipping;
-        $gsfProductOrderData['discount']           = $total_discount_price + $order->get_discount_total();//$order_id;
+        $gsfProductOrderData['discount']           = $total_discount_price + $order->get_discount_total();
         $gsfProductOrderData['currency']           = get_woocommerce_currency();
-        $gsfProductOrderData['order_created_date'] = ($order->get_date_created() != '') ?  $order->get_date_created() : ''; // added by PL @14/09/23 for GCR 
+        $gsfProductOrderData['order_created_date'] = ($order->get_date_created() != '') ?  $order->get_date_created() : ''; 
 
-        // added by DJ @15/06/22 for enhanced conversion tracking 
+        // enhanced conversion tracking 
         // Get the Customer billing email
         $gsfProductOrderData['billing_email']  = ($order->get_billing_email() != '')?$order->get_billing_email():'';
 
@@ -374,7 +391,7 @@ if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
         $gsfProductOrderData['billing_postcode']   = ($order->get_billing_postcode() != '')?$order->get_billing_postcode():'';
         $gsfProductOrderData['billing_country']    = ($order->get_billing_country() != '')?$order->get_billing_country():'';
         $gsfProductOrderData['order_key']          = ($order->get_order_key() != '')?$order->get_order_key():'';
-        // added by DJ @15/06/22 for enhanced conversion tracking 
+        //enhanced conversion tracking 
         
         callJSFuncGSF($gsfProductOrderData, "proceedToPurchaseGSF");
     }
@@ -389,7 +406,7 @@ if ( ! function_exists( 'proceedToCheckoutGSF' ) ) {
     }
 
     $gsfwc_cart     = WC()->cart;
-    $subtotal_price = $gsfwc_cart->subtotal ? $gsfwc_cart->subtotal : 0; // added by DJ 01/08/23
+    $subtotal_price = $gsfwc_cart->subtotal ? $gsfwc_cart->subtotal : 0;
     $total_price    = $gsfwc_cart->total ? $gsfwc_cart->total : 0;
     $items          = $gsfwc_cart->get_cart();
     $count          = 0;
@@ -397,27 +414,27 @@ if ( ! function_exists( 'proceedToCheckoutGSF' ) ) {
 
     foreach($items as $values) { 
       $_product =  wc_get_product( $values['data']->get_id()); 
-      $price    = get_post_meta($values['data']->get_id() , '_price', true);/* edited by DJ 28/6/21 old ($values['product_id'] ) */
-      $sku      = get_post_meta($values['data']->get_id() , '_sku', true);/* edited by DJ 28/6/21 old ($values['product_id'] ) */
+      $price    = get_post_meta($values['data']->get_id() , '_price', true);
+      $sku      = get_post_meta($values['data']->get_id() , '_sku', true);
 
       $gsfProductCheckoutData[$count]['variant_id']= $values['variation_id'];
       $gsfProductCheckoutData[$count]['product_id']= $values['product_id'];
       $gsfProductCheckoutData[$count]['name']= filterStringsWithHtmlentitiesGSF($_product->get_title());
       $gsfProductCheckoutData[$count]['price']= $price;
-      $gsfProductCheckoutData[$count]['quantity']= $values['quantity']; // added by DJ 01/08/23
+      $gsfProductCheckoutData[$count]['quantity']= $values['quantity'];
       $gsfProductCheckoutData[$count]['currency']= get_woocommerce_currency();
       $gsfProductCheckoutData[$count]['sku']= $sku;
-      $gsfProductCheckoutData[$count]['brand']= gsf_get_product_brand($values['data']->get_id());/* edited by DJ 28/6/21 old ($values['product_id'] ) */
-      $gsfProductCheckoutData[$count]['variant']= arrayToStrCommaGSF($_product->get_children());/* edited by DJ 28/6/21 old ($values['product_id'] ) */
+      $gsfProductCheckoutData[$count]['brand']= gsf_get_product_brand($values['data']->get_id());
+      $gsfProductCheckoutData[$count]['variant']= arrayToStrCommaGSF($_product->get_children());
       $gsfProductCheckoutData[$count]['variant_title']= !empty($values['variation']) ? gsf_get_variant_title($values['variation']) : '';
-      $gsfProductCheckoutData[$count]['category']= gsf_get_first_category(strip_tags(wc_get_product_category_list($values['product_id']) ));/* edited by DJ 28/6/21 old ($values['product_id'] ) */
+      $gsfProductCheckoutData[$count]['category']= gsf_get_first_category(strip_tags(wc_get_product_category_list($values['product_id']) ));
       
       $gsfProductCheckoutData[$count]['index']= $count;
       $count++;
     } 
-    $gsfProductCheckoutData['subtotal_price']  = $subtotal_price; // added by DJ 01/08/23
+    $gsfProductCheckoutData['subtotal_price']  = $subtotal_price; 
     $gsfProductCheckoutData['total_price'] = $total_price;
-    $gsfProductCheckoutData['currency']        = get_woocommerce_currency(); // added by DJ 01/08/23
+    $gsfProductCheckoutData['currency']        = get_woocommerce_currency();
     callJSFuncGSF($gsfProductCheckoutData, "proceedToCheckoutGSF");
   }
 }
@@ -484,7 +501,6 @@ if ( ! function_exists( 'productViewItemCategoryPageGSF' ) ) {
         $gsfProductCategoryData[$count]['name']= filterStringsWithHtmlentitiesGSF($product->get_name());
         $gsfProductCategoryData[$count]['currency']= get_woocommerce_currency();
 
-        /* edited by DJ 28/6/21 */
         if($variation_id != 0){
           $price = get_post_meta($variation_id  , '_price', true);
           $sku = get_post_meta($variation_id  , '_sku', true);
@@ -492,17 +508,15 @@ if ( ! function_exists( 'productViewItemCategoryPageGSF' ) ) {
           $gsfProductCategoryData[$count]['sku']= $sku;
           $gsfProductCategoryData[$count]['total_price']= $price;
         }else{
-          $gsfProductCategoryData[$count]['price']= $product->get_price();//$product->get_regular_price();
+          $gsfProductCategoryData[$count]['price']= $product->get_price();
           $gsfProductCategoryData[$count]['sku']= $product->get_sku();
           $gsfProductCategoryData[$count]['total_price']= $product->get_price();
         }
-        /* edited by DJ 28/6/21 */
               
         $gsfProductCategoryData[$count]['brand']= gsf_get_product_brand($product->get_id());
         $gsfProductCategoryData[$count]['variant']= arrayToStrCommaGSF($product->get_children());
         $gsfProductCategoryData[$count]['category']= gsf_get_first_category(strip_tags( wc_get_product_category_list( $product->get_id() ) ));
         
-        /* added by DJ 28/6/21 */
         $gsfProductCategoryData[$count]['type']=$product->get_type();
         if($product->is_type('variable')){
           foreach($product->get_available_variations() as $product_variation){
@@ -520,7 +534,6 @@ if ( ! function_exists( 'productViewItemCategoryPageGSF' ) ) {
           }
         }
         $gsfProductCategoryData[$count]['variant_title']= $variant_title;
-        /* added by DJ 28/6/21 */
         
         $gsfProductCategoryData[$count]['index']=$count;
         $gsfProductCategoryData[$count]['quantity']=1;
@@ -559,34 +572,34 @@ if ( ! function_exists( 'productViewItemCartPageGSF' ) ) {
       }
       $gsfProductCartData    = array();
       $gsfwc_cart     = WC()->cart;
-      $subtotal_price = $gsfwc_cart->subtotal ? $gsfwc_cart->subtotal : 0; // added by DJ 01/08/23
+      $subtotal_price = $gsfwc_cart->subtotal ? $gsfwc_cart->subtotal : 0;
       $total_price    = $gsfwc_cart->total ? $gsfwc_cart->total : 0;
       $items          = $gsfwc_cart->get_cart();
       $count          = 0;
 
       foreach($items as $values) { 
           $_product =  wc_get_product( $values['data']->get_id()); 
-          $price = get_post_meta($values['data']->get_id() , '_price', true);/* edited by DJ 28/6/21 old ($values['product_id'] ) */
-          $sku = get_post_meta($values['data']->get_id() , '_sku', true);/* edited by DJ 28/6/21 old ($values['product_id'] ) */
+          $price = get_post_meta($values['data']->get_id() , '_price', true);
+          $sku = get_post_meta($values['data']->get_id() , '_sku', true);
 
           $gsfProductCartData[$count]['variant_id']= $values['variation_id'];
           $gsfProductCartData[$count]['product_id']= $values['product_id'];
           $gsfProductCartData[$count]['name']= filterStringsWithHtmlentitiesGSF($_product->get_title());
           $gsfProductCartData[$count]['price']= $price;
-          $gsfProductCartData[$count]['quantity']   = $values['quantity']; // added by DJ 01/08/23
+          $gsfProductCartData[$count]['quantity']   = $values['quantity'];
           $gsfProductCartData[$count]['currency']= get_woocommerce_currency();
           $gsfProductCartData[$count]['sku']= $sku;
           $gsfProductCartData[$count]['brand']= gsf_get_product_brand($values['data']->get_id());
-          $gsfProductCartData[$count]['variant']= arrayToStrCommaGSF($_product->get_children());/* edited by DJ 28/6/21 old ($values['product_id'] ) */
+          $gsfProductCartData[$count]['variant']= arrayToStrCommaGSF($_product->get_children());
           $gsfProductCartData[$count]['variant_title']= !empty($values['variation']) ? gsf_get_variant_title($values['variation']) : '';
-          $gsfProductCartData[$count]['category']= gsf_get_first_category(strip_tags( wc_get_product_category_list( $values['product_id'] ) ));/* edited by DJ 28/6/21 old ($values['product_id'] ) */
+          $gsfProductCartData[$count]['category']= gsf_get_first_category(strip_tags( wc_get_product_category_list( $values['product_id'] ) ));
           
           $gsfProductCartData[$count]['index']= $count;
           $count++;
       } 
-      $gsfProductCartData['subtotal_price'] = $subtotal_price; // added by DJ 01/08/23
+      $gsfProductCartData['subtotal_price'] = $subtotal_price;
       $gsfProductCartData['total_price'] = $total_price;
-      $gsfProductCartData['currency']       = get_woocommerce_currency(); // added by DJ 01/08/23
+      $gsfProductCartData['currency']       = get_woocommerce_currency();
       
       callJSFuncGSF($gsfProductCartData, "productViewItemCartPageGSF");
   }
@@ -597,29 +610,13 @@ if ( ! function_exists( 'productViewItemGSF' ) ) {
       global $product;
       
       $product_price = $product->get_price();
-      /*
-      if ( $product->is_type('variable') ) {
-          foreach($product->get_available_variations() as $product_variation){
-              $is_check_default_attributes=true;
-              foreach($product->get_variation_default_attributes() as $defkey=>$defval){
-                  if($product_variation['attributes']['attribute_'.$defkey]!=$defval){
-                      $is_check_default_attributes=false;             
-                  }   
-              }
-              if($is_check_default_attributes){
-                  $product_price = $product_variation['display_price'];         
-              }
-          }   
-      }
-      */
         
       $gsfProductDetailData = array();
 
-      //$variation_id = isset($product->get_children()[0]) ? $product->get_children()[0] : 0;
       $gsfProductDetailData['variant_id']    = 0;
       $gsfProductDetailData['product_id']    = $product->get_id();
       $gsfProductDetailData['name']          = filterStringsWithHtmlentitiesGSF($product->get_title());
-      $gsfProductDetailData['price']         = $product_price;//$product->get_regular_price();
+      $gsfProductDetailData['price']         = $product_price;
       $gsfProductDetailData['currency']      = get_woocommerce_currency();
       $gsfProductDetailData['sku']           = $product->get_sku();
       $gsfProductDetailData['brand']         = gsf_get_product_brand($product->get_id());
@@ -629,10 +626,7 @@ if ( ! function_exists( 'productViewItemGSF' ) ) {
       $gsfProductDetailData['total_price']   = $product_price;
       $gsfProductDetailData['index']   = 0;
       $gsfProductDetailData['quantity']   = 1;
-      //added by DJ @14/02/24, For SPD
-      if(gsfwcValidateRequest() && isset( $_REQUEST[ 'pv2' ] ) && !empty( $_REQUEST[ 'pv2' ] ) ){
-        tokenVerifyGSF($product);
-      }
+      
       callJSFuncGSF($gsfProductDetailData, "productViewItemGSF");
     }
 }
@@ -664,7 +658,6 @@ if ( ! function_exists( 'productViewItemHomePageGSF' ) ) {
         $gsfProductHomeData[$count]['name']= filterStringsWithHtmlentitiesGSF($product->get_name());
         $gsfProductHomeData[$count]['currency']= get_woocommerce_currency();
 
-        /* edited by DJ 28/6/21 */          
         if($variation_id != 0){
           $price = get_post_meta($variation_id  , '_price', true);
           $sku = get_post_meta($variation_id  , '_sku', true);
@@ -673,17 +666,15 @@ if ( ! function_exists( 'productViewItemHomePageGSF' ) ) {
           $gsfProductHomeData[$count]['total_price']= $price;
         }
         else{
-          $gsfProductHomeData[$count]['price']= $product->get_price();//$product->get_regular_price();
+          $gsfProductHomeData[$count]['price']= $product->get_price();
           $gsfProductHomeData[$count]['sku']= $product->get_sku();
           $gsfProductHomeData[$count]['total_price']= $product->get_price();
         }
-        /* added by DJ 28/6/21 */
         
         $gsfProductHomeData[$count]['brand']= gsf_get_product_brand($product->get_id());
         $gsfProductHomeData[$count]['variant']= arrayToStrCommaGSF($product->get_children());
         $gsfProductHomeData[$count]['category']= gsf_get_first_category(strip_tags( wc_get_product_category_list( $product->get_id() ) ));
          
-        /* edited by DJ 28/6/21 */     
         $gsfProductHomeData[$count]['type']=$product->get_type();
         if($product->is_type('variable')){
           $available_variations = $product->get_available_variations();
@@ -702,7 +693,6 @@ if ( ! function_exists( 'productViewItemHomePageGSF' ) ) {
           }
         }
         $gsfProductHomeData[$count]['variant_title']= $variant_title;
-        /* added by DJ 28/6/21 */   
         
         $gsfProductHomeData[$count]['index'] = $count;
         $gsfProductHomeData[$count]['quantity'] = 1;
@@ -725,29 +715,14 @@ if ( ! function_exists( 'addToCartGSF' ) ) {
       $cart_data = (WC()->cart) ? WC()->cart->get_cart() : array();
       $product_price = $product->get_price();
         
-      /*if ( $product->is_type('variable') ) {
-        foreach($product->get_available_variations() as $product_variation){
-          $is_check_default_attributes=true;
-          foreach($product->get_variation_default_attributes() as $defkey=>$defval){
-            if($product_variation['attributes']['attribute_'.$defkey]!=$defval){
-              $is_check_default_attributes=false;             
-            }   
-          }
-          if($is_check_default_attributes){
-            $product_price = $product_variation['display_price'];         
-          }
-        }   
-      }*/
-      
       $gsfProductAddCartData = array();
 
-      // $variation_id = isset($product->get_children()[0]) ? $product->get_children()[0] : 0;
       
       if($variation_id != 0){
         $price = get_post_meta($variation_id  , '_price', true);
         $sku = get_post_meta($variation_id  , '_sku', true);
       }else{
-        $price = $product->get_price(); // $product->get_regular_price();
+        $price = $product->get_price();
         $sku = $product->get_sku();
       }
 
@@ -769,7 +744,7 @@ if ( ! function_exists( 'addToCartGSF' ) ) {
     }
 }
 
-/* Display Admin Panel Notice : By JG : 24/03/2021 */
+/* Display Admin Panel Notice */
 
 function getWpGeneralAdminNoticeGSF(){
       return get_option('wp_gsf_admin_notice_content_html', null);
@@ -779,16 +754,16 @@ function generalAdminNoticeGSF(){
     echo getWpGeneralAdminNoticeGSF();
 }
 
-//added by DJ 6-8-21 ajax call for get product detail
+//get product detail
 function ajaxRequestGSF() {
     $product_id=isset($_REQUEST['gsfwc_product_id']) ? $_REQUEST['gsfwc_product_id'] : 0;
     $gsfProductAjaxData = array();
     // Get $product object from product ID
-    if(!empty($product_id) && $product_id != 0){ //added by DJ @21/09/23
+    if(!empty($product_id) && $product_id != 0){
         $cart_data = WC()->cart->get_cart();
         // Get $product object from product ID
         $product = wc_get_product( $product_id );
-        if(isset($product)){ //added by DJ @21/09/23
+        if(isset($product)){
           // Check is variant or simple product
           if($product->get_parent_id()==0){
             $gsfProductAjaxData['variant_id']= 0;
@@ -822,14 +797,14 @@ function ajaxRequestGSF() {
     
 }
 
-//added by JG 13-04-22 for filter product strings with htmlentities
+// filter product strings with htmlentities
 if ( ! function_exists( 'filterStringsWithHtmlentitiesGSF' ) ) {
   function filterStringsWithHtmlentitiesGSF($item_name){
     return htmlentities($item_name, ENT_QUOTES, "UTF-8");
   }
 }
 
-//added by DJ 08/05/23 for Settings Button on plugin
+//Settings Button on plugin
 if ( ! function_exists( 'pluginSettingsLinkGSF' ) ) {
     function pluginSettingsLinkGSF($links) { 
       $settings_link = '<a href="admin.php?page=shopping-feed-for-google">Settings</a>'; 
@@ -838,18 +813,18 @@ if ( ! function_exists( 'pluginSettingsLinkGSF' ) ) {
     }
 }
 
-//added by PL @04/10/23 for WP serch event
+// WP serch event
 if(!function_exists('proceedToSearchGSF')){
     function proceedToSearchGSF($query){
         $search_string  = get_query_var('s');
 
-        if(isset($search_string) && !empty($search_string)){ //Added by DJ @03/06/24, Do not trigger search event for empty search  
+        if(isset($search_string) && !empty($search_string)){ // Do not trigger search event for empty search  
           $product_ids    = [];
           $variation_ids  = [];
           $sku            = [];
           $gsfProductSearchData    = array();
           
-          // Remove get product query code (wc_get_products()) from here because in search event we don't need product and variants ID by DK@10-12-2024
+          // Remove get product query code (wc_get_products()) from here because in search event we don't need product and variants ID
 
           $gsfProductSearchData['product_id']      = $product_ids;
           $gsfProductSearchData['search_string']   = $search_string;
@@ -863,7 +838,15 @@ if(!function_exists('proceedToSearchGSF')){
 }
 
 ////////////////////////////////// SPD discount [start] ////////////////////////////
-//added by DJ @14/02/24
+
+if ( ! function_exists( 'gsfAutomatedDiscountPrice' ) ) {
+  function gsfAutomatedDiscountPrice(){
+    global $product;
+    if(gsfwcValidateRequest() && isset( $_REQUEST[ 'pv2' ] ) && !empty( $_REQUEST[ 'pv2' ] ) ){
+      tokenVerifyGSF($product);
+    }
+  }
+}
 if ( ! function_exists( 'gsfwcValidateRequest' ) ) {
     function gsfwcValidateRequest(){
         if(isset($_REQUEST['stkn'])  && !empty( $_REQUEST[ 'stkn' ] )){
@@ -887,19 +870,33 @@ function alterPriceDisplayGSF( $price, $product ) {
     // ONLY IF PRICE NOT NULL
     if ( '' === $product->get_price() ) return $price;
     
+    $session = WC()->session;
+    if ( ! $session ) {
+        return $price; // WC()->session not available, stop execution
+    }
+
+    if($product->get_parent_id() > 0){
+      $gsf_product_id = $product->get_parent_id();
+      $gsf_variant_id = $product->get_id();
+    }else{
+      $gsf_product_id = $gsf_variant_id = $product->get_id();
+    }
+
+    $gsf_session_prod = $gsf_product_id . ((!empty($gsf_variant_id) && !gsf_variation_prices_same($product)) ? "_$gsf_variant_id" : '');
+
 	  // session_start();
     date_default_timezone_set('UTC');
     $gsfwc_cur_pid  = ($product->get_parent_id() != 0)?$product->get_parent_id():$product->get_id();
     $gsfwc_cur_time = date('U');
-    $gsfwc_exp_time = isset($_SESSION['gsfwc_spd_'.$gsfwc_cur_pid.'_timeout']) ? $_SESSION['gsfwc_spd_'.$gsfwc_cur_pid.'_timeout'] : 0 ;
+    $gsfwc_exp_time = $session->get( 'gsfwc_spd_'.$gsf_session_prod.'_timeout', 0 );
     
     // IF Session set, apply DISCOUNT   
-    if ( isset($_SESSION['gsfwc_spd_'.$gsfwc_cur_pid]) && ($gsfwc_exp_time > $gsfwc_cur_time )) {
+    if ( !empty($session->get('gsfwc_spd_'.$gsf_session_prod, '')) && ($gsfwc_exp_time > $gsfwc_cur_time )) {
 
         if ( $product->is_type( 'simple' ) || $product->is_type( 'variation' ) ) {  
 
             $gsfwc_product_price = ($product->is_on_sale()) ? $product->get_sale_price() : $product->get_regular_price() ;
-            $price               = wc_format_sale_price($gsfwc_product_price, $_SESSION['gsfwc_spd_'.$gsfwc_cur_pid] ) . $product->get_price_suffix();
+            $price               = wc_format_sale_price($gsfwc_product_price, $session->get('gsfwc_spd_'.$gsf_session_prod) ) . $product->get_price_suffix();
             
         } elseif ( $product->is_type( 'variable' ) ) {
              $prices = $product->get_variation_prices( true );
@@ -912,13 +909,13 @@ function alterPriceDisplayGSF( $price, $product ) {
                 $min_reg_price  = current( $prices['regular_price'] );
                 $min_sale_price = current( $prices['sale_price'] );
                 $gsfwc_product_price = ($product->is_on_sale()) ? $min_sale_price : $min_price ;
-                $price = wc_format_sale_price( wc_price( $gsfwc_product_price), wc_price( isset($_SESSION['gsfwc_spd_'.$gsfwc_cur_pid]) ? $_SESSION['gsfwc_spd_'.$gsfwc_cur_pid] : 0 ) );
+                $price = wc_format_sale_price( wc_price( $gsfwc_product_price), wc_price( $session->get('gsfwc_spd_'.$gsf_session_prod, 0) ) );
                 $price = apply_filters( 'woocommerce_variable_price_html', $price . $product->get_price_suffix(), $product );
              }
              
         }   
     }
-    session_write_close();
+    // session_write_close();
     return $price;
  
 }
@@ -946,16 +943,29 @@ function alterCartPriceGSF( $cart ) {
 
 function tokenVerifyGSF( $product ) {
     
-    if($product->get_parent_id()== 0){
-        $product_id = $variant_id = $product->get_id();
-    }else{
-        $product_id = $product->get_parent_id();
-        $variant_id = $product->get_id();
+    $gsf_variant_id = '';
+    $gsf_product_id = $gsf_variant_id = $product->get_id();
+    $gsf_product_price = $product->get_price();
+    if ( $product->is_type( 'variable' ) ) {
+      $attributes = $product->get_attributes();
+      $selected_attributes = [];
+      // Collect selected attributes from URL or POST
+      foreach ( $attributes as $attribute_name => $options ) {
+        $taxonomy = 'attribute_' . sanitize_title( $attribute_name );
+        if ( isset( $_REQUEST[ $taxonomy ] ) ) {
+          $selected_attributes[ $taxonomy ] = wc_clean( wp_unslash( $_REQUEST[ $taxonomy ] ) );
+        }
+      }
+      $gsf_variant_id = $product->get_matching_variation( $selected_attributes );
+      $variation = wc_get_product( $gsf_variant_id );
+      $gsf_product_price = $variation->get_price();
+    } elseif ( $product->is_type( 'variation' ) ) {
+      $gsf_variant_id = $gsf_product_id;
     }
     
-    $productData['product_id'] = $product_id;
-    $productData['variant_id'] = $variant_id;
-    $productData['price']      = $product->get_price();
+    $productData['product_id'] = $gsf_product_id;
+    $productData['variant_id'] = $gsf_variant_id;
+    $productData['price']      = $gsf_product_price;
     $productData['name']       = filterStringsWithHtmlentitiesGSF($product->get_name());
     $productData['currency']   = get_woocommerce_currency();
     $productData['sku']        = $product->get_sku();
@@ -973,12 +983,17 @@ function tokenVerifyGSF( $product ) {
             $gsfwc_product_id   = $gsfwc_productdata->product_id;
             $gsfwc_variant_id   = $gsfwc_productdata->variant_id;
 			
-            $_SESSION['gsfwc_spd_'.$gsfwc_product_id]            = $gsfwc_productdata->new_price;
-            $_SESSION['gsfwc_spd_'.$gsfwc_product_id.'_timeout'] = $gsfwc_productdata->exp;
+            $gsf_session_prod = $gsf_product_id . ((!empty($gsf_variant_id) && !gsf_variation_prices_same($product)) ? "_$gsf_variant_id" : '');
+
+            $session = WC()->session;
+            if ($session){
+              $session->set( 'gsfwc_spd_'.$gsf_session_prod, $gsfwc_productdata->new_price );
+              $session->set( 'gsfwc_spd_'.$gsf_session_prod.'_timeout', $gsfwc_productdata->exp );
+            }
 			
         }
     }
-	session_write_close();
+	// session_write_close();
     
 }
 
@@ -986,7 +1001,8 @@ function addOrderItemMetaGSF( $item_id, $values ) {
     date_default_timezone_set('UTC');
     $gsfwc_cur_time = date('U');
     if ( isset($values['gsfwc_spd']) && (isset($values['gsfwc_spd_cart_exp']) && ($values['gsfwc_spd_cart_exp'] > $gsfwc_cur_time))) {
-        $_productwc           = wc_get_product( $values['product_id']);
+        $product_id = ($values['variation_id'] > 0) ? $values['variation_id'] : $values['product_id'];
+        $_productwc           = wc_get_product( $product_id );
         $price_org            = $_productwc->get_price();
         $quantity = $values['quantity'];
 
@@ -1001,16 +1017,85 @@ function addCartItemDataGSF( $cart_item_data, $product_id, $variation_id ) {
     // session_start();
     date_default_timezone_set('UTC');
     
-    $gsfwc_cur_time = date('U');
-    $gsfwc_exp_time = isset($_SESSION['gsfwc_spd_'.$product_id.'_timeout']) ? $_SESSION['gsfwc_spd_'.$product_id.'_timeout'] : 0 ;
+    $session = WC()->session;
+    if ( ! $session ) {
+        return $cart_item_data; // WC()->session not available, stop execution
+    }
     
-    if ( isset($_SESSION['gsfwc_spd_'.$product_id]) && $gsfwc_exp_time > $gsfwc_cur_time) {
-      $cart_item_data['gsfwc_spd']            = isset($_SESSION['gsfwc_spd_'.$product_id]) ? $_SESSION['gsfwc_spd_'.$product_id] : 0;
+    $gsf_variation_id = (!empty($variation_id)) ? $variation_id : $product_id;
+    $gsf_session_prod = $product_id . ((!empty($gsf_variation_id) && !gsf_variation_prices_same($product_id)) ? "_$gsf_variation_id" : '');
+
+    $gsfwc_cur_time = date('U');
+    $gsfwc_exp_time = $session->get( 'gsfwc_spd_'.$gsf_session_prod.'_timeout', 0 );
+    
+    if ( !empty($session->get('gsfwc_spd_'.$gsf_session_prod, '')) && $gsfwc_exp_time > $gsfwc_cur_time) {
+      $cart_item_data['gsfwc_spd']            = $session->get('gsfwc_spd_'.$gsf_session_prod, 0);
       $cart_item_data['gsfwc_spd_cart_exp']   = strtotime('+48 hour');
     }
     session_write_close();
     return $cart_item_data;
 }
+
+if ( ! function_exists( 'gsf_woocommerce_init_session' ) ) {
+  function gsf_woocommerce_init_session() {
+    if ( WC()->session && ! WC()->session->has_session() && gsfwcValidateRequest() && isset( $_REQUEST[ 'pv2' ] ) && !empty( $_REQUEST[ 'pv2' ] ) ) {
+        WC()->session->set_customer_session_cookie( true );
+    }
+  }
+}
+
+
+if ( ! function_exists( 'gsf_check_is_automated_discount' ) ) {
+	function gsf_check_is_automated_discount( $condition, $product ) {
+		$session = WC()->session;
+		if ( ! $session ) {
+			return $condition; 
+		}
+
+		$gsf_product_id = $product->get_id();
+		$variation_ids = $product->get_children();
+
+		if(!empty($variation_ids)){
+			foreach ( $variation_ids as $gsf_variant_id ) {
+				$gsf_session_prod = $gsf_product_id . ((!empty($gsf_variant_id) && !gsf_variation_prices_same($product)) ? "_$gsf_variant_id" : '');
+				if(!empty($session->get('gsfwc_spd_'.$gsf_session_prod, ''))){
+					return true;
+				}
+			}
+		}
+
+		return $condition;
+	}
+}
+
+function gsf_variation_prices_same($product) {
+    // Get product object if an ID is passed
+    if (is_numeric($product)) {
+        $product = wc_get_product($product);
+    }
+
+    if (!$product) {
+        return true;
+    }
+
+    // If product is a variation, get its parent
+    if ($product->is_type('variation')) {
+        $product = wc_get_product($product->get_parent_id());
+    }
+
+    // Only proceed for variable products
+    if (!$product->is_type('variable')) {
+        return true;
+    }
+
+    // Get min and max variation prices
+    $min_price = (float) $product->get_variation_price('min', true);
+    $max_price = (float) $product->get_variation_price('max', true);
+
+    return $min_price === $max_price;
+}
+
+
 ////////////////////////////////// SPD discount code end ////////////////////////////
 
 function getGSFAdvancedSettings(){
@@ -1066,8 +1151,6 @@ if ( ! function_exists( 'showAdminErrorsGSF' ) ) {
             </p>
         </div>
         <?php
-        // Delete the transient so the notice is shown only once
-        // delete_transient('show_gsf_errors');
     }
   }
 }
@@ -1172,6 +1255,41 @@ if (! function_exists('saveOrderMetaGSF')) {
       update_post_meta($order_id, '_wp_gsf_user_consent', sanitize_text_field($_COOKIE['cookieyes-consent']));
     } 
 
+  }
+}
+
+if ( ! function_exists( 'gsf_upgrade_notice' ) ) {
+  function gsf_upgrade_notice( $data, $response ) {
+    if ( isset( $data['upgrade_notice'] ) ) {
+      add_action( 'admin_print_footer_scripts', 'gsf_upgrade_notice_js' );
+      $msg = str_replace( array( '<p>', '</p>' ), array( '<div>', '</div>' ), $data['upgrade_notice'] );
+      echo '<style type="text/css">
+          #shopping-feed-for-google-update .update-message p:last-child{ display:none;}     
+          #shopping-feed-for-google-update ul{ list-style:disc; margin-left:30px;}
+          .gsf-upgrade-notice{ padding-left:30px;}
+          </style>
+          <div class="update-message gsf-upgrade-notice"><div style="color: #f56e28;">' . esc_html__( 'Please make sure the cache is cleared after each plugin update especially if you have minified JS and/or CSS files.') . '</div>' . wp_kses_post( wpautop( $msg ) ) . '</div>';
+    }
+  }
+}
+
+/**
+ * Javascript for handling upgrade notice.
+ *
+ * @return void
+ */
+if ( ! function_exists( 'gsf_upgrade_notice_js' ) ){
+  function gsf_upgrade_notice_js() {     ?>
+      <script>
+        ( function( $ ){
+          var update_dv=$( '#shopping-feed-for-google-update ');
+          update_dv.find('.gsf-upgrade-notice').next('p').remove();
+          update_dv.find('a.update-link:eq(0)').click(function(){
+            $('.gsf-upgrade-notice').remove();
+          });
+        })( jQuery );
+      </script>
+      <?php
   }
 }
 

@@ -20,9 +20,9 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
     public function resetApiAllOptionsGSF(){
         global $wpdb;
         $shop_secret_db = getWpShopSecretKeyGSF();
-        $message        = "";//changed by DJ @03/06/24, old : [] || new : ""
+        $message        = "";
         $error          = 0;
-        $action         = "";//changed by DJ @03/06/24, old : [] || new : ""
+        $action         = "";
         $route_action   = getDataGSF('action');
         $shop_secret    = getDataGSF('shop_secret');
 
@@ -36,7 +36,7 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
                     $option_key     = getDataGSF('option_key');
                     $option_value   = getDataGSF('option_value');
                     
-                    if(strpos($option_key, 'wp_gsf_') === 0){ //added by DJ @04/06/24 //only allow gsf option keys to update.
+                    if(strpos($option_key, 'wp_gsf_') === 0){ //only allow gsf option keys to update.
                         if(!empty($option_key)){
                             $message      = "The wordpress option has been created or updated successfully.";
                             $action       = "wordpress option updated";
@@ -57,7 +57,7 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
                     $option_key = getDataGSF('option_key');
                     return getShopDataGSF($option_key);
                 break;    
-                // added by DJ 01/08/23 to get published product id for debugging
+                // get published product id for debugging
                 case 'getPublishedProductId' :
                     $args = array(
                         'limit'     => -1,

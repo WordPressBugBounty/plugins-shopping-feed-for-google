@@ -5,7 +5,7 @@ Plugin Name: Simprosys Product Feed For WooCommerce
 Requires Plugins: woocommerce
 Plugin URI: http://wordpress.org/plugins/shopping-feed-for-google/
 Description: Automate real-time product syncing to Google, Microsoft Advertising & Meta from WooCommerce store. Effortlessly launch campaigns, & track visitor interactions with Google Analytics (GA4).
-Version: 3.8
+Version: 5.0.0
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
 */
@@ -38,9 +38,9 @@ if (isset($_POST['wp_gsf_app_redirect'])) {
 
 if(isCheckWoocommerceAvailableGSF()){
     add_action( 'admin_menu', 'addAdminMenuGSF' );
-    add_action( 'wp_ajax_gsf_wp_action', 'registerStoreGSF' ); //moved here by DJ @04/06/24, If "Woocommerce" is not activate this hooks are useless
-    add_action( 'wp_ajax_nopriv_gsf_wp_action', 'registerStoreGSF'); //moved here by DJ @04/06/24, If "Woocommerce" is not activate this hooks are useless
-    add_action( 'wp_head', 'addGoogleVerificationTokenGSF' ); //moved here by DJ @04/06/24, If "Woocommerce" is not activate this hooks are useless
+    add_action( 'wp_ajax_gsf_wp_action', 'registerStoreGSF' ); // If "Woocommerce" is not activate this hooks are useless
+    add_action( 'wp_ajax_nopriv_gsf_wp_action', 'registerStoreGSF'); // If "Woocommerce" is not activate this hooks are useless
+    add_action( 'wp_head', 'addGoogleVerificationTokenGSF' ); // If "Woocommerce" is not activate this hooks are useless
 
     // Display errors if found
     add_action('admin_notices', 'showAdminErrorsGSF');
@@ -48,12 +48,11 @@ if(isCheckWoocommerceAvailableGSF()){
 }
 
 add_action( 'upgrader_process_complete', 'upgradePluginVersionGSF', 10, 2 );
-add_action( 'admin_notices', 'generalAdminNoticeGSF' ); /*  Added generalAdminNoticeGSF : By JG : 24/03/2021 */
+add_action( 'admin_notices', 'generalAdminNoticeGSF' );
 
-/*  Added google conversion script Code : By JG :  24/03/2021 */
+/*  google conversion script Code */
 
 function addGoogleConversionTrackingScriptGSF() {
-  //wp_enqueue_script( 'style', getWpGoogleConversionTrackingScriptGSF(), 'all');
     if (!wp_script_is('jquery', 'registered')) {
        wp_register_script( 'jquery.min.js', plugin_dir_url(__FILE__).'js/jquery.min.js');
        wp_enqueue_script( 'jquery.min.js' );
@@ -84,20 +83,15 @@ if(isWpGoogleConversionTrackingEnableGSF()){
     /* Checkout Page view Event */
     add_action(get_option('wp_gsf_checkout_page_view','woocommerce_before_checkout_form'), 'proceedToCheckoutGSF', 10);
     
+    /* Thank You Page view Event */
     add_action(get_option('wp_gsf_thankyou_page_view','woocommerce_thankyou'), 'proceedToPurchaseGSF', 10, 1);
 
+    /* Search Page view Event */
     add_filter( 'get_search_query', 'proceedToSearchGSF' );
 
     add_action('woocommerce_checkout_update_order_meta', 'saveOrderMetaGSF', 10, 1);
     
-    if(isEnableGSFAdvancedFeature('gsf_scp_discount')){
-        add_filter( 'woocommerce_get_price_html', 'alterPriceDisplayGSF', 9999, 2 );
-        add_filter( 'woocommerce_add_order_item_meta', 'addOrderItemMetaGSF', 10, 3 );
-        add_filter( 'woocommerce_add_cart_item_data', 'addCartItemDataGSF', 10, 3 );
-        add_action( 'woocommerce_before_calculate_totals', 'alterCartPriceGSF', 9999 );
-    }
-
-    // Conversion tag for Add to cart & Checkout for Woocommerce Blocks by DK@30-01-2025
+    // Conversion tag for Add to cart & Checkout for Woocommerce Blocks
     if( has_action( 'render_block' ) ){
         add_filter( 'render_block', 'gsf_woocommerce_block_do_actions', 9999, 2 );
         if ( !is_admin() ){
@@ -107,7 +101,17 @@ if(isWpGoogleConversionTrackingEnableGSF()){
 	}
 }
 
-/* added by DJ 6-8-21 for listing page conversion tag ajax call */
+if(isEnableGSFAdvancedFeature('gsf_scp_discount')){
+    add_action(get_option('wp_gsf_product_page_view','woocommerce_before_single_product'),'gsfAutomatedDiscountPrice');
+    add_filter( 'woocommerce_get_price_html', 'alterPriceDisplayGSF', 9999, 2 );
+    add_filter( 'woocommerce_add_order_item_meta', 'addOrderItemMetaGSF', 10, 3 );
+    add_filter( 'woocommerce_add_cart_item_data', 'addCartItemDataGSF', 10, 3 );
+    add_action( 'woocommerce_before_calculate_totals', 'alterCartPriceGSF', 9999 );
+    add_action( 'woocommerce_init', 'gsf_woocommerce_init_session', 10 );
+    add_filter( 'woocommerce_show_variation_price', 'gsf_check_is_automated_discount', 10, 2 );
+}
+
+/* listing page conversion tag ajax call */
 //Define AJAX URL
 function gsfwc_plugin_ajaxurl() {
    echo '<script type="text/javascript">
@@ -120,9 +124,9 @@ if(isWpGoogleConversionTrackingEnableGSF()){
     add_action( 'wp_ajax_nopriv_ajaxRequestGSF', 'ajaxRequestGSF' ); 
 }
 
-/* added by DJ 6-8-21 for listing page conversion tag ajax call */
+/* listing page conversion tag ajax call */
 
-/* added by JG 28/04/2022 */
+
 add_filter( 'plugin_row_meta', 'pluginRowMetaGSF', 10, 2 );
 
 function pluginRowMetaGSF( $links, $file ) {    
@@ -138,14 +142,17 @@ function pluginRowMetaGSF( $links, $file ) {
     return (array) $links;
 }
 
-/* added by DJ 08/05/23 Settings Button on plugin */
+/* Settings Button on plugin */
 $plugin = plugin_basename(__FILE__); 
 add_filter("plugin_action_links_$plugin", 'pluginSettingsLinkGSF',10,2 );
 
-//Added by PL @10/09/25 for tips
+// Display upgrade notice in plugins page
+add_action( "in_plugin_update_message-$plugin", 'gsf_upgrade_notice', 10, 2 );
+
+//Simpro tips Dashboard
 add_action( 'plugins_loaded', function() {
     GSF_WC_Tips::init();
-    if (!session_id()) { // Start session if not already started
-        session_start();
-    }
+    // if (!session_id() && ! is_admin() && ! ( defined('REST_REQUEST') && REST_REQUEST ) && ! ( defined('DOING_AJAX') && DOING_AJAX ) ) { // Start session if not already started in frontend only
+    //     session_start();
+    // }
 });

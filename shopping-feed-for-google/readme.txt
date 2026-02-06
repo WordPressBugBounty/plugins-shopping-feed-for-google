@@ -2,9 +2,9 @@
 Contributors: Simprosys
 Tags: WooCommerce Product Feed, Google Feed, Microsoft Advertising Feed, P-Max Campaign, Conversion Tracking
 Requires at least: 4.4
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 3.8
+Stable tag: 5.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,8 +223,23 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 5.0.0 =
+* New: Introduced Embedded App inside the WordPress Admin (Phase 1)
+* Added: Embedded Dashboard
+* Added: Embedded Product Listing page
+* Added: Product filtering functionality
+* Added: Product Detail page
+
+= 4.0.0 =
+* Added: Local Inventory Feed Submission via API
+* Fixed: PHP Session issue 
+* Upgraded: Automated Discount applicability on Variant level
+
+= 3.9 =
+* Fixed: Critical Error on the WordPress Admin.
+
 = 3.8 =
-* Fixed: Google Ads conversion tracking issue for more accurate reporting.  
+* Fixed: Google Ads conversion tracking issue for more accurate reporting.
 * Fixed: discount parameter issue in the Automated Discount feature.
 
 = 3.7 =
@@ -330,6 +345,5 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 
 == Upgrade Notice ==
 
-= 3.8 =
-[Fix] - Fixed Google Ads conversion tracking issue for more accurate reporting.  
-[Fix] - Fixed discount parameter issue in the Automated Discount feature. 
+= 5.0.0 =
+This major release introduces the first phase of the Embedded App experience inside the WordPress Admin, starting with a Dashboard and Product Listing page.
