@@ -1,5 +1,5 @@
 <?php
-define( 'WP_GSF_PLUGIN_VERSION', '5.0.0' );
+define( 'WP_GSF_PLUGIN_VERSION', '5.1.0' );
 define( 'WP_GSF_PLUGIN_NAME', 'Simprosys Product Feed For WooCommerce' );
 define( 'WP_GSF_PLUGIN_MENU_NAME', 'Simprosys Product Feed' );
 define( 'WP_GSF_API_URL',"https://gsf-wc.simprosysapps.com");

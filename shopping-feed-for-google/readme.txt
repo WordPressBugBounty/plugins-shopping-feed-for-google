@@ -4,7 +4,7 @@ Tags: WooCommerce Product Feed, Google Feed, Microsoft Advertising Feed, P-Max C
 Requires at least: 4.4
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 5.0.0
+Stable tag: 5.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,6 +223,10 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 5.1.0 =
+* Added - Google Customer Match List (CML) feature to enhance audience targeting using customer data
+* Improved/Enhanced - Facebook server-side event tracking for better accuracy and performance
+
 = 5.0.0 =
 * New: Introduced Embedded App inside the WordPress Admin (Phase 1)
 * Added: Embedded Dashboard
@@ -345,5 +349,5 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 
 == Upgrade Notice ==
 
-= 5.0.0 =
-This major release introduces the first phase of the Embedded App experience inside the WordPress Admin, starting with a Dashboard and Product Listing page.
+= 5.1.0 =
+Google Customer Match List (CML) feature to enhance audience targeting using customer data & Enhanced Facebook server-side event tracking for better accuracy and performance

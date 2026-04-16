@@ -1237,22 +1237,22 @@ if (! function_exists('saveOrderMetaGSF')) {
   /**
    * Method saveOrderMetaGSF to store data in order meta and retrive in REST API
    */
-  function saveOrderMetaGSF($order_id){
+  function saveOrderMetaGSF($order){
     // Store FBP and FBC in order meta for Purchase FB event
     if(isset($_COOKIE['_fbp']) && !empty($_COOKIE['_fbp'])){
-      update_post_meta($order_id, '_wp_gsf_fbp', sanitize_text_field($_COOKIE['_fbp']));
+      $order->update_meta_data('_wp_gsf_fbp', sanitize_text_field($_COOKIE['_fbp']));
     }
     if(isset($_COOKIE['_fbc']) && !empty($_COOKIE['_fbc'])){
-      update_post_meta($order_id, '_wp_gsf_fbc', sanitize_text_field($_COOKIE['_fbc']));
+      $order->update_meta_data('_wp_gsf_fbc', sanitize_text_field($_COOKIE['_fbc']));
     }
 
     // Store consent method and user consent in order meta for GA4 event
     if(isset($_COOKIE['cmplz_marketing']) && !empty($_COOKIE['cmplz_marketing'])){
-      update_post_meta($order_id, '_wp_gsf_consent_method', 'cmplz');
-      update_post_meta($order_id, '_wp_gsf_user_consent', sanitize_text_field($_COOKIE['cmplz_marketing']));
+      $order->update_meta_data('_wp_gsf_consent_method', 'cmplz');
+      $order->update_meta_data('_wp_gsf_user_consent', sanitize_text_field($_COOKIE['cmplz_marketing']));
     } else if(isset($_COOKIE['cookieyes-consent']) && !empty($_COOKIE['cookieyes-consent'])){
-      update_post_meta($order_id, '_wp_gsf_consent_method', 'cookieyes');
-      update_post_meta($order_id, '_wp_gsf_user_consent', sanitize_text_field($_COOKIE['cookieyes-consent']));
+      $order->update_meta_data('_wp_gsf_consent_method', 'cookieyes');
+      $order->update_meta_data('_wp_gsf_user_consent', sanitize_text_field($_COOKIE['cookieyes-consent']));
     } 
 
   }
