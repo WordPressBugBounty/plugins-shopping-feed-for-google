@@ -2,6 +2,7 @@ var gsf_slide_count = jQuery('.gsf-wp-carousel-slide').length;
 var gsf_current_slide = 0;
 jQuery(document).ready(function() {
     gsfUpdateSlideCount(0);
+    gsfToggleForeverOption(0);
     jQuery(document).on('click', '.gsf-wp-slide-next', function() {
         gsfDisplaySlide(gsfGetSliderIndex(gsf_current_slide+1));
     });
@@ -66,6 +67,13 @@ function gsfDisplaySlide(index) {
         }
     });
     jQuery('.gsf-wp-carousel-main').addClass('notice-'+current_slide.attr('data-type'));
+    gsfToggleForeverOption(index);
+}
+
+function gsfToggleForeverOption(index) {
+    var slide = jQuery('.gsf-wp-carousel-slide').eq(index);
+    var isForeverDismissible = slide.attr('data-forever-dismissible') === '1';
+    jQuery('.gsf-wp-notification-forever-dismiss').toggle(isForeverDismissible);
 }
 
 function gsfGetSliderIndex(index){

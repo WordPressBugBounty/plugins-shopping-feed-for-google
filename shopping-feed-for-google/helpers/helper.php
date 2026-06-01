@@ -123,7 +123,8 @@ function registerStoreGSF(){
         'city'            => get_option( 'woocommerce_store_city' ),
         'address1'        => get_option( 'woocommerce_store_address' ),
         'gmt_offset_timezone' => get_option('gmt_offset'),
-        'string_timezone' => get_option('timezone_string')
+        'string_timezone' => get_option('timezone_string'),
+        'zip_code' => get_option('woocommerce_store_postcode')
     );
     
     $client = new WP_GSF_HttpClient();
@@ -198,6 +199,14 @@ function addAdminMenuGSF() {
         'Manage Products',
         $capability,
         $menu_slug.'#/manage-products',
+        $function
+    );
+    add_submenu_page(
+        $menu_slug,
+        'Promotions Feed',
+        'Promotions Feed',
+        $capability,
+        $menu_slug.'#/promotions',
         $function
     );
 }
