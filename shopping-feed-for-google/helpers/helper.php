@@ -319,15 +319,26 @@ function arrayToStrCommaGSF($arr){
 /* Added code for Google Conversion Tracking */
 
 if ( ! function_exists( 'proceedToPurchaseGSF' ) ) {
-  function proceedToPurchaseGSF($order_id){
-    if ( ! $order_id )
+  function proceedToPurchaseGSF($order){
+    if ( empty( $order ) ) {
+        return;
+    }
+    // Convert order ID to WC_Order object if needed
+    if ( is_numeric( $order ) ) {
+      $order = wc_get_order( $order );
+    }
+
+    // Validate order object
+    if ( ! $order instanceof WC_Order ) {
       return;
+    }
+    $order_id = $order->get_id();
           
-    // Allow code execution only once 
-    if( ! get_post_meta( $order_id, 'thankyou_action_done_'.$order_id, true ) ) {
-        update_post_meta($order_id, 'thankyou_action_done_'.$order_id,1);
-        // Get an instance of the WC_Order object
-        $order = wc_get_order( $order_id );
+    // Allow code execution only once     
+    if ( ! $order->get_meta( 'thankyou_action_done', true ) ) {
+        $order->update_meta_data( 'thankyou_action_done', 1 );
+        $order->save();
+        
         $total_discount_price = 0;
 
         $gsfProductOrderData = array();  
@@ -503,8 +514,12 @@ if ( ! function_exists( 'productViewItemCategoryPageGSF' ) ) {
             continue; // Let the loop finish to not break $wp_query
         }
         global $product; 
+        if ( ! $product instanceof WC_Product ) {
+          continue;
+        }
         $variant_title = '';
-        $variation_id = isset($product->get_children()[0]) ? $product->get_children()[0] : 0;
+        $children = $product->get_children();
+        $variation_id = isset($children[0]) ? $children[0] : 0;
         $gsfProductCategoryData[$count]['variant_id']= $variation_id;
         $gsfProductCategoryData[$count]['product_id']= $product->get_id();
         $gsfProductCategoryData[$count]['name']= filterStringsWithHtmlentitiesGSF($product->get_name());
@@ -617,6 +632,9 @@ if ( ! function_exists( 'productViewItemCartPageGSF' ) ) {
 if ( ! function_exists( 'productViewItemGSF' ) ) {
     function productViewItemGSF() {
       global $product;
+      if ( ! $product instanceof WC_Product ) {
+        return;
+      }
       
       $product_price = $product->get_price();
         
@@ -660,8 +678,12 @@ if ( ! function_exists( 'productViewItemHomePageGSF' ) ) {
   
       while ( $products->have_posts() ) : $products->the_post();
         global $product; 
+        if ( ! $product instanceof WC_Product ) {
+          continue;
+        }
         $variant_title = '';
-        $variation_id = isset($product->get_children()[0]) ? $product->get_children()[0] : 0;
+        $children = $product->get_children();
+        $variation_id = isset($children[0]) ? $children[0] : 0;
         $gsfProductHomeData[$count]['variant_id']= $variation_id;
         $gsfProductHomeData[$count]['product_id']= $product->get_id();
         $gsfProductHomeData[$count]['name']= filterStringsWithHtmlentitiesGSF($product->get_name());

@@ -4,7 +4,7 @@ Tags: WooCommerce Product Feed, Google Feed, Microsoft Advertising Feed, P-Max C
 Requires at least: 4.4
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 5.2.0
+Stable tag: 5.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -223,6 +223,11 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 5.3.0 =
+* New: Added new feature WooCommerce Categories as Facebook Product Sets
+* Improved: Purchase Conversion Tracking
+* Fixed: Resolved multiple critical errors and stability issues
+
 = 5.2.0 =
 * Added: Google Promotions Feed in Embed View
 * Added: Bulk Edit and CSV export/import feature in Embed View
@@ -353,5 +358,5 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 
 == Upgrade Notice ==
 
-= 5.2.0 =
-Added support for the Google Promotions Feed in the Embed View, along with Bulk Edit functionality to streamline management and CSV export/import options for easier data handling.
+= 5.3.0 =
+Added new feature WooCommerce Categories as Facebook Product Sets, improved Purchase Conversion Tracking, and resolved multiple critical issues.

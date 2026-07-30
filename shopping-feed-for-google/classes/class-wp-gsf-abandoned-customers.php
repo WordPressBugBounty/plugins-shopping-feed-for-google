@@ -7,6 +7,8 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
         const ABANDONED_KEY = 'gsf_wp_abandoned_customer_sessions';
         const ABANDONED_DELAY = 1800; //3600;
         const ABANDONED_SCHEDULE_TIME = 300; //3600;
+        const WEBHOOK_CACHE_KEY = 'gsf_has_active_webhook';
+        const WEBHOOK_CACHE_TTL = 12 * HOUR_IN_SECONDS;
         public function __construct() {
             // Add webhooks
             add_filter( 'woocommerce_webhook_topics', [ $this, 'gsf_wp_webhook_topics' ], 10, 1 );
@@ -27,7 +29,16 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
             // For Classic Checkout Script
 			add_filter( 'wp_footer', [ $this, 'save_customers_data_script' ], 20 );
 
+			// Invalidate the cached webhook check whenever webhooks change
+			add_action( 'woocommerce_new_webhook', [ $this, 'gsf_clear_webhook_cache' ] );
+			add_action( 'woocommerce_webhook_updated', [ $this, 'gsf_clear_webhook_cache' ] );
+			add_action( 'woocommerce_webhook_deleted', [ $this, 'gsf_clear_webhook_cache' ] );
 
+        }
+
+        // Clear the cached active-webhook flag so the next check re-queries
+        public function gsf_clear_webhook_cache() {
+            delete_transient( self::WEBHOOK_CACHE_KEY );
         }
 
         public function gsf_wp_webhook_topics($topics) {
@@ -58,7 +69,37 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
             return $schedules;
         }
 
+        // Check whether an active webhook exists for the abandoned customer topic.
+        // Result is cached in a 12h transient and invalidated on webhook changes.
+        private function gsf_has_active_webhook() {
+            $cached = get_transient( self::WEBHOOK_CACHE_KEY );
+            if ( $cached !== false ) {
+                return $cached === 'yes';
+            }
+
+            $has_webhook = false;
+
+            if ( class_exists( 'WC_Data_Store' ) ) {
+                $data_store  = WC_Data_Store::load( 'webhook' );
+                $webhook_ids = $data_store->get_webhooks_ids( 'active' );
+
+                foreach ( $webhook_ids as $webhook_id ) {
+                    $webhook = wc_get_webhook( $webhook_id );
+                    if ( $webhook && $webhook->get_topic() === 'gsf.abandoned_customer' ) {
+                        $has_webhook = true;
+                        break;
+                    }
+                }
+            }
+
+            set_transient( self::WEBHOOK_CACHE_KEY, $has_webhook ? 'yes' : 'no', self::WEBHOOK_CACHE_TTL );
+
+            return $has_webhook;
+        }
+
         public function schedule_gsf_cron() {
+            if ( ! $this->gsf_has_active_webhook() ) return;
+
             if ( ! as_next_scheduled_action( 'gsf_process_abandoned_customers' ) ) {
                 as_schedule_recurring_action( time(),  self::ABANDONED_SCHEDULE_TIME, 'gsf_process_abandoned_customers' );
             }
@@ -83,6 +124,8 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
         }
 
         public function process_abandoned_customers(){
+            if ( ! $this->gsf_has_active_webhook() ) return;
+
             global $wpdb;
             $table = $wpdb->prefix . 'woocommerce_sessions';
 
@@ -119,7 +162,10 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
 						
                         if (!isset($session_data['cart']) || empty($session_data['cart'])) continue;
                         if (!isset($session_data['customer']) || empty($session_data['customer'])) continue;
-                        
+
+                        // Fingerprint of the cart contents for this session
+                        $session_cart_hash = md5( maybe_serialize( $session_data['cart'] ) );
+
                         // Fire webhook
                         do_action('gsf_wp_abandoned_customer_hook', [
 							'gsf_session_id' => $row->session_key,
@@ -145,17 +191,7 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
 		
 		public function gsf_modify_webhook_payload($payload, $resource, $resource_id, $webhook_id) {
 			if ($resource === 'gsf') {
-				$logger = new WC_Logger();
-				$log_name = 'checking_webhook';
 				// You can modify payload here if needed
-				$dd = [
-					'test' => $payload,
-					'res' => $resource,
-					'resid' => $resource_id,
-					'web' => $webhook
-				];
-				$logger->add( $log_name, print_r( $dd, true ) );
-
 				return $resource_id; // your custom payload
 			}
 			return $payload;
@@ -170,11 +206,18 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
 
 			// Update WC_Customer object
 			$customer = WC()->customer;
+			if ( ! $customer ) return;
 
 			// --- Billing fields ---
 			$customer->set_billing_first_name( $data['billing_first_name'] ?? $customer->get_billing_first_name() );
 			$customer->set_billing_last_name( $data['billing_last_name'] ?? $customer->get_billing_last_name() );
-			$customer->set_billing_email( $data['billing_email'] ?? $customer->get_billing_email() );
+
+			// Only set the billing email when it is a valid address. 
+			$billing_email = isset( $data['billing_email'] ) ? sanitize_email( $data['billing_email'] ) : '';
+			if ( $billing_email && is_email( $billing_email ) ) {
+				$customer->set_billing_email( $billing_email );
+			}
+
 			$customer->set_billing_phone( $data['billing_phone'] ?? $customer->get_billing_phone() );
 
 			// --- Determine shipping fields based on admin option ---
@@ -229,6 +272,7 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
         public function save_customers_data_script(){
             if (!$this->is_classic_checkout()) return;
 
+            if ( ! WC()->session ) return;
             $ship_to_diff = WC()->session->get('ship_to_different_address');
 
             ?>

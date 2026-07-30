@@ -25,16 +25,20 @@ class WP_GSF_Controller {
 	    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-activator.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-loader.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-rest-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-category-products-controller.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-admin-notification.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-feedback.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-product-status.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-tips.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-embedded.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-abandoned-customers.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-wp-gsf-category-webhooks.php';
 		new WP_GSF_Feedback();
 		$this->loader = new WP_GSF_Loader();
 		$Custom_Rest = new WP_GSF_Rest_Controller();
 		$Custom_Rest->callHooksGSF();
+		$Category_Products_Rest = new WP_GSF_Category_Products_Controller();
+		$Category_Products_Rest->callHooksGSF();
 	}
 
 

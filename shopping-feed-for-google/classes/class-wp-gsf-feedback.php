@@ -10,6 +10,16 @@ class WP_GSF_Feedback
     }
 
     /**
+     * Main plugin file basename, e.g. shopping-feed-for-google/shopping-feed-for-google.php
+     *
+     * @return string
+     */
+    private function get_plugin_basename()
+    {
+        return plugin_basename( plugin_dir_path( dirname( __FILE__ ) ) . 'shopping-feed-for-google.php' );
+    }
+
+    /**
 	 * Register the routes for deactive plugin feedback.
 	 */
 	public function gsf_feedback_register_routes() {
@@ -115,7 +125,12 @@ class WP_GSF_Feedback
                 $(function() {
                     var modal = $('#gsf-feedback-modal');
                     var deactivateLink = '';
-                    $('a#deactivate-shopping-feed-for-google').click(function(e) {
+                    var deactivateSelector = [
+                        'a[href*="action=deactivate"][href*="<?php echo esc_js( rawurlencode( $this->get_plugin_basename() ) ); ?>"]',
+                        'a[href*="action=deactivate"][href*="<?php echo esc_js( $this->get_plugin_basename() ); ?>"]'
+                    ].join(',');
+
+                    $(document).on('click', deactivateSelector, function(e) {
                         e.preventDefault();
                         modal.find("input, textarea").each(function() {
                             if ($(this).is(":checkbox")) {
