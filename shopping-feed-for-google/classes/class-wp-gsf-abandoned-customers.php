@@ -7,6 +7,7 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
         const ABANDONED_KEY = 'gsf_wp_abandoned_customer_sessions';
         const ABANDONED_DELAY = 1800; //3600;
         const ABANDONED_SCHEDULE_TIME = 300; //3600;
+        const ABANDONED_HOOK = 'gsf_process_abandoned_customers';
         const WEBHOOK_CACHE_KEY = 'gsf_has_active_webhook';
         const WEBHOOK_CACHE_TTL = 12 * HOUR_IN_SECONDS;
         public function __construct() {
@@ -19,7 +20,7 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
             // Process Webhooks
             add_action('init', [ $this, 'schedule_gsf_cron' ]);
             add_filter( 'woocommerce_cart_updated', [ $this, 'gsf_wp_woocommerce_cart_updated' ] );
-            add_action( 'gsf_process_abandoned_customers', [ $this, 'process_abandoned_customers' ] );
+            add_action( self::ABANDONED_HOOK, [ $this, 'process_abandoned_customers' ] );
 			add_filter( 'woocommerce_webhook_payload', [ $this, 'gsf_modify_webhook_payload' ], 10, 4 );
 			
 			// Save customer Data in WC session
@@ -39,6 +40,12 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
         // Clear the cached active-webhook flag so the next check re-queries
         public function gsf_clear_webhook_cache() {
             delete_transient( self::WEBHOOK_CACHE_KEY );
+
+            // Re-check immediately: if the last active webhook is gone, drop the cron.
+            if ( ! $this->gsf_has_active_webhook() ) {
+                self::gsf_unschedule_abandoned_cron();
+            }
+
         }
 
         public function gsf_wp_webhook_topics($topics) {
@@ -96,12 +103,31 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
 
             return $has_webhook;
         }
+        // Cancel the recurring action (and any pending occurrence) if one exists.
+        // Recurring actions re-queue themselves, so a leftover chain has to be
+        // unscheduled explicitly - returning early from the callback is not enough.
+        public static function gsf_unschedule_abandoned_cron() {
+            if ( ! function_exists( 'as_unschedule_all_actions' ) ) return;
+
+            if ( function_exists( 'as_has_scheduled_action' ) ) {
+                if ( ! as_has_scheduled_action( self::ABANDONED_HOOK ) ) return;
+            } elseif ( ! as_next_scheduled_action( self::ABANDONED_HOOK ) ) {
+                return;
+            }
+
+            as_unschedule_all_actions( self::ABANDONED_HOOK );
+        }
 
         public function schedule_gsf_cron() {
-            if ( ! $this->gsf_has_active_webhook() ) return;
+            if ( ! function_exists( 'as_schedule_recurring_action' ) ) return;
 
-            if ( ! as_next_scheduled_action( 'gsf_process_abandoned_customers' ) ) {
-                as_schedule_recurring_action( time(),  self::ABANDONED_SCHEDULE_TIME, 'gsf_process_abandoned_customers' );
+            if ( ! $this->gsf_has_active_webhook() ) {
+                self::gsf_unschedule_abandoned_cron();
+                return;
+            }
+
+            if ( ! as_next_scheduled_action( self::ABANDONED_HOOK ) ) {
+                as_schedule_recurring_action( time(),  self::ABANDONED_SCHEDULE_TIME, self::ABANDONED_HOOK );
             }
         }
         public function gsf_wp_woocommerce_cart_updated() {
@@ -124,7 +150,11 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
         }
 
         public function process_abandoned_customers(){
-            if ( ! $this->gsf_has_active_webhook() ) return;
+            // No active webhook: stop the recurring chain instead of idling every 5 minutes.
+            if ( ! $this->gsf_has_active_webhook() ) {
+                self::gsf_unschedule_abandoned_cron();
+                return;
+            }
 
             global $wpdb;
             $table = $wpdb->prefix . 'woocommerce_sessions';

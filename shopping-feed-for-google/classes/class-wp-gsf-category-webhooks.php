@@ -28,7 +28,7 @@ if (! class_exists('WP_GSF_Category_Webhooks')) {
         private static $tt_cache = [];
 
         private const TOPIC = 'gsf_category.change';
-        private const WEBHOOK_CACHE_KEY = 'gsf_has_active_category_webhook';
+        public const WEBHOOK_CACHE_KEY = 'gsf_has_active_category_webhook';
         private const WEBHOOK_CACHE_TTL = 12 * HOUR_IN_SECONDS;
 
         private const PRIORITY = [
@@ -96,6 +96,23 @@ if (! class_exists('WP_GSF_Category_Webhooks')) {
         }
 
         public function clear_webhook_cache() {
+            self::gsf_clear_category_webhook_cache();
+
+            // Re-check immediately: if the last active webhook is gone, drop
+            // anything already collected this request so shutdown stays quiet.
+            if (! $this->has_active_webhook()) {
+                self::$pending      = [];
+                self::$deleted_data = [];
+            }
+        }
+
+        /**
+         * Drop the cached active-webhook flag.
+         *
+         * Static so plugin deactivation / uninstall can purge it without
+         * booting the class, mirroring WP_GSF_Abandoned_Customers::gsf_unschedule_abandoned_cron().
+         */
+        public static function gsf_clear_category_webhook_cache() {
             delete_transient(self::WEBHOOK_CACHE_KEY);
         }
 

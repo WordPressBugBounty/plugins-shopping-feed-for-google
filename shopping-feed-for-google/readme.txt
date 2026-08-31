@@ -1,109 +1,124 @@
 === Product Feed for Google Shopping, Microsoft Advertising and 40+ Channels for WooCommerce Merchant  ===
 Contributors: Simprosys
-Tags: WooCommerce Product Feed, Google Feed, Microsoft Advertising Feed, P-Max Campaign, Conversion Tracking
+Tags: WooCommerce Product Feed, Google Shopping, Google Merchant Center, Conversion Tracking, Product Feed
 Requires at least: 4.4
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 5.3.0
+Stable tag: 5.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Automate real-time product syncing to Google, Microsoft & Facebook from WooCommerce. Launch campaigns and track interactions with Google Analytics 4.
+
+WooCommerce product feed plugin for Google, Microsoft & Facebook (Meta), including AI-powered optimisation, PMax, GA4 & Customer Match List. A 14-day free trial.
+
 
 == DESCRIPTION ==
 
-Boost your WooCommerce store’s visibility on Google Shopping, Microsoft Advertising, Facebook (Meta) with our powerful **Simprosys Product Feed for WooCommerce Plugin**. In just **30 minutes**, you can submit your product feed to marketing platforms and start advertising to millions of potential customers with **real-time automated API feed submissions**.
+
+**Simprosys Product Feed for WooCommerce** is an all-in-one solution for connecting your WooCommerce store to **Google Shopping, Microsoft Advertising, and Facebook (Meta)**. It uses API based real-time product syncing, AI-powered feed optimization, and key Google features, helping advertisers submit accurate and up-to-date product listings without manual uploads.
+
 
 https://youtu.be/DM7fLB02Lyw
 
-== WHY US FOR PRODUCT FEED? ==
-   ✅ **Quick & Automated Feed Synchronization** – Get your feed updated in **under 30 minutes**.
-   ✅ **All-in-One Platform:** Submit feeds for **Google, Microsoft Advertising, and Meta** under **one plan**.
-   ✅ **Expert Support:** Optimize your product feed with assistance from our experienced and knowledgeable support team.
-   ✅ **Advanced Ad Campaign Management:** Manage **Google & Microsoft Advertising Performance Max (Pmax) Campaigns** directly within the plugin.
-   ✅ **Comprehensive Tracking Features:** Track conversions for **Google, Meta, Microsoft Advertising, and GA4 Events.**
-   ✅ **Google Customer Reviews & Automated Discounts:** Enable Google Customer Reviews and AI-powered **Automated Discount feature.**
-   ✅ **Promotion Feed via API:** Generate **Merchant Promotions Feeds** for Google effortlessly.
+
+== WHY CHOOSE US FOR PRODUCT FEED FOR WOOCOMMERCE? ==
+   ✅ **Quick & Automated Feed Syncing** – Product data feed syncs to Google Shopping, Microsoft Advertising, and Facebook (Meta) within 30 minutes.
+   ✅ **AI-Powered Feed Optimization** *(new)* – Simprosys AI automatically generates missing product attributes to improve overall product performance.
+   ✅ **Google Customer Match Audiences** *(new)* - Build first-party audience lists in Google Ads directly from WooCommerce customer data for smarter ad targeting.
+   ✅ **Ad Campaign Management** - Manage Google & Microsoft Advertising Performance Max (PMax) campaigns directly from the plugin.
+   ✅ **Comprehensive Tracking** - Conversion tracking for Google, Facebook (Meta) with CAPI (Conversion API), Microsoft Advertising, GA4 events and Advanced Consent Mode.
+   ✅ **Google Customer Reviews & Automated Discounts** - AI-powered Automated Discount feature plus Google Customer Reviews integration to improve CTR and conversions.
+   ✅ **Promotion Feed via API** - Generate promotions feed to display seasonal discounts in Google Shopping results.
+   ✅ **Google Calculated Delivery Speed Estimates (US only)** - Display accurate delivery time in Google Shopping results to improve overall CTR.
+   ✅ **Google Local Inventory Feed** *(new)* - Showcase your local inventory to nearby shoppers in Google Shopping results.
+   ✅ **WooCommerce Category as Facebook (Meta) Product Sets** *(new)* - Syncs your WooCommerce categories and submits them as Product Sets in Facebook Commerce Manager, no manual set creation needed.
+
 
 == OUR MISSION ==
-Providing an advanced automated Feed setup with various features to setup and manage their feed on multiple marketing channels and campaigns.
+Our mission is to make WooCommerce product feed management simple by helping store owners to manage product feeds across Google, Microsoft Advertising, Facebook (Meta), and other marketing channels so your products can appear to relevant and engaged shoppers.
 
-== Key Features for Ultimate Product Feed Optimization: ==
 
-* **Seamless Product Feed Submission**
-   * Submit product feeds to Google, Microsoft Advertisement, and Meta via API.
-   * Generate XML feeds for affiliate platforms like Pinterest, TikTok, and eBay using Google’s standard attributes.
-   * Support for multi-country feed submissions to expand your global reach (for Google only).
+== Key Features of Our WooCommerce Product Feed Plugin: ==
 
-* **Advanced Feed Optimization Tools**
-   * Automated Feed Rules to set up age group, gender, custom labels, and shipping labels. Also, exclude out-of-stock or other products to refine your feed.
-   * Bulk Edit & Filtering for quick attribute modification and error resolution.
-   * **Different Product ID formats**
-      * SKU as Product ID 
-      * Variant ID as Product ID (Ex: 123456789)
-      * Variant ID with prefix "gla_" (Ex: gla_6789)
-      * Product Group ID with Variant ID (Ex: 12345_6789)
-   * Title & Description Optimization directly in the plugin or via CSV file uploads.
-   * GTIN assignment in bulk or through CSV and category-recommended attribute submission for feed optimization.
 
-* **Performance Max Campaign & Tracking Management**
-   * Set up and manage Google & Microsoft Advertising Pmax campaigns directly from the plugin.
-   * Google Dynamic Remarketing Tagging and Enhanced Conversion Tracking for better campaign results.
-   * Facebook(Meta) Pixel & Microsoft Advertising tracking integration in just a few clicks.
-   * Google Analytics 4 (GA4) Events Tracking with refunds and admin order events.
+* **WooCommerce Product Feed Submission**
+   * Submit product feeds to **Google Shopping, Microsoft Advertising, and Facebook (Meta)** using **API method**.
+   * Generate XML feeds for affiliate platforms like Pinterest, TikTok, and eBay using Google's standard attributes.
+   * **Multi-country** feed submission **(Google only)**.
 
-* **Exclusive Features for Higher Ad Performance**
-   * Google Automated Discounts: Leverage Google’s AI-Driven Automated Discounts and adjust prices dynamically based on real-time signals to drive more conversions.
-   * Google Customer Reviews Integration: Collect and showcase seller ratings on your WooCommerce store.
-   * Google Calculated Delivery Speed Estimates: Display accurate delivery time estimates to potential buyers.
-   * Google & Microsoft Advertising Consent Mode Compliance: Ensure compliance with GDPR & data privacy regulations.
-   * Automated Product Exclusions: Exclude out-of-stock items or filter products by price or category.
-   * Product Promotions via API: Highlight special offers within Google Shopping Ads.
 
-* **How Our Plugin Helps Your Business?**
-   * Enhances Product Visibility by adding critical attributes like Size, Color, Material, Pattern, Google Product Category, and Custom Labels.
-   * Supports Multiple SEO Plugins: Integrates with Yoast SEO, Rank Math, All-in-One SEO, and SEOPress for seamless metadata management.
-   * Offers Image Optimization: Set up primary and additional image submission preferences.
-   * Enables Sale Price Synchronization: Submit both Regular & Sale prices, with Google displaying Sale Price Badges for eligible products.
-   * Tax (VAT/GST) Configuration: Customize tax settings for Google, Meta, and Microsoft Advertising based on region-specific regulations.
-   * Automates Conversion Tracking: Monitors soft conversions like Add to Cart, Begin Checkout, and Purchase actions for Google.
+* **Google Product Category (GPC) Recommendations** *(new)*
+   * Plugin automatically **maps** the **Google Product Category** for products missing one, a common cause of **limited ad performance**.
+
+
+* **Price Recommendations from Google Merchant Center** *(new)*
+   * Syncs Google's own trend-based **price suggestions** within the plugin dashboard, helping you stay price-competitive based on real market signals.
+
+
+* **Product Feed Optimization features for WooCommerce**
+   * Automated Feed Rules for age group, gender, custom labels, shipping labels, and product exclusions.
+   * Bulk Edit & Filtering for fast **attribute assignment and feed error resolution**.
+   * Flexible Product ID formats **(SKU, Variant ID, Variant ID with gla prefix, Product Group ID with Variant ID)**.
+   * Title, Description, Product Type and Brand optimization in-plugin or via CSV import/export.
+   * GTIN assignment using CSV file on variant level.
+
+
+* **Tracking Management**
+   * Google dynamic remarketing & enhanced conversion tracking.
+   * Facebook (Meta) pixel **CAPI (Conversion API)**
+   * GA4 event tracking, including **refunds and admin orders**.
+
+
+* **How this Product Feed for WooCommerce helps your business**
+   * Helps to assign multiple attributes such as Color, Gender, Size, Age Group, Custom Labels, etc to improve overall **product visibility in shopping results**.
+   * Integrates with **Yoast SEO, Rank Math SEO, All-in-One SEO, SEOPress and Smart Crawl SEO plugins**.
+   * Image optimization for primary and additional product images.
+   * Sale price submission to integrated marketing channels.
+   * Country-specific tax (VAT/GST) configuration for Google, Facebook (Meta), and Microsoft Advertising.
+   * Drive Shoppers closer to purchase with **Google Checkout Link Template**
+
 
 https://youtu.be/Of5fmfXmE3U
 
+
 == Compatibility with third-party WooCommerce Plugins ==
 **Our plugin seamlessly integrates with multiple WooCommerce plugins, including:**
+
 
 * [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/)
 * [All-in-One SEO](https://wordpress.org/plugins/all-in-one-seo-pack)
 * [Rank Math SEO](https://wordpress.org/plugins/seo-by-rank-math)
 * [SEOPress](https://wordpress.org/plugins/wp-seopress)
-* [WooCommerce UPC, EAN, and ISBN](https://wordpress.org/plugins/woo-add-gtin)
+* [SmartCrawl SEO](https://wordpress.org/plugins/smartcrawl-seo/)
 * Yoast SEO: WooCommerce (Paid)
 * [Custom Product Tabs for WooCommerce](https://wordpress.org/plugins/yikes-inc-easy-custom-woocommerce-product-tabs)
-* WooCommerce Additional Product Identifiers fields
-* WooCommerce Custom Product Brand
 * [Advanced Shipment Tracking for WooCommerce](https://wordpress.org/plugins/woo-advanced-shipment-tracking/)
 * [Orders Tracking for WooCommerce](https://wordpress.org/plugins/woo-orders-tracking)
 * [Complianz - GDPR/CCPA Cookie Consent](https://wordpress.org/plugins/complianz-gdpr/)
 * [CookieYes - Cookie Banner for Cookie Consent (Easy to setup GDPR/CCPA Compliant Cookie Notice)](https://wordpress.org/plugins/cookie-law-info/)
 
 
+
+
 == SUBSCRIPTION ==
 
-* All the features we offer are accessible at every subscription plan. No limitations based on Premium Plans.
+
+* All the features we offer are **accessible** at every subscription plan. No limitations based on Premium Plans.
 * **Annual Plans** are available now with a **10% discount**.
-* For Pricing structure please refer to this help doc link:
+* For the pricing structure, please refer to this help doc link:
 [https://support.simprosys.com/faq/pricing-for-the-shopping-feed-for-google-woocommerce](https://support.simprosys.com/faq/pricing-for-the-shopping-feed-for-google-woocommerce)
+
 
 == SUPPORT ==
 
-   * If you’ve installed our plugin or are ready to install the plugin then please have a look at our [Help Docs](https://support.simprosys.com/shopping-feed-for-google) it may be helpful.
-   * We are just a thought away. Anytime you need help or guidance, we are available for you via Emails, Live Chat, and Screen-sharing Sessions/VOIP calls.
+
+   * If you’ve installed our plugin or are ready to install the plugin, then please have a look at our [Help Documentation](https://support.simprosys.com/shopping-feed-for-google).
+   * Our team is available via **live chat**, **email**, and **[screen-sharing](https://calendly.com/simprosys/wc-screen-sharing-session) sessions** to help you configure feeds, troubleshoot errors, basic campaign optimisation, and even assist with Google Merchant Center account suspension reviews.
    * You can connect with us over email at [support@simprosys.com](mailto:support@simprosys.com)
 
 == Installation ==
 
-Within a few clicks generates your product feed and syncs them to Google, Microsoft Advertising and Meta automatically in real-time. Optimise your products, set up campaigns, and advertise like a pro.
+Within a few clicks, fetch your product feed in real-time and sync with Google, Microsoft Advertising and Facebook (Meta) automatically. Optimise your products, set up campaigns, and advertise like a pro.
 
 Here is a step-by-step help doc for installation: [https://support.simprosys.com/faq/step-by-step-integration-guide-for-shopping-feed-for-google](https://support.simprosys.com/faq/step-by-step-integration-guide-for-shopping-feed-for-google)
 
@@ -113,107 +128,89 @@ Here is a help doc if you wish to integrate your Microsoft Ads account: [https:/
 
 == Frequently Asked Questions ==
 
-= Does your plugin offer a free trial? = 
-Yes! We offer a **14-day free trial** where you can access **all features** without any restrictions. Start optimizing your product feeds for Google, Microsoft Advertising, and Meta today!
+= Does this plugin offer a free trial? = 
+Yes! We offer a **14-day free trial** with access to **every feature, unlimited products, and no restrictions**. It's the complete plugin experience from day one. Start optimising your product feeds for Google, Microsoft Advertising, and Facebook (Meta).
+
 
 = How quickly are product feed changes updated on advertising platforms? =
-Our plugin uses the **Content API method**, ensuring that any updates you make in your WooCommerce store are **synced within 30 minutes** across Google Shopping, Microsoft Advertising, and Meta.
+Any update you make in your WooCommerce store is synced across Google Shopping, Microsoft Advertising, and Facebook (Meta) **in real time** using the **API method**. No manual effort is required.
+
+= How is Simprosys different from other WooCommerce feed plugins? =
+Most feed plugins simply submit your product data as-is. Our plugin goes further with features including **AI-powered Feed Optimisation** that automatically improves your product data before it is submitted to integrated channels. **Google Customer Match** Lists to remarket your own customers. **Google Customer Reviews** integration to build store ratings and trust. **Local Inventory Feed** submission for physical stores, syncing your WooCommerce categories and submitting them as **Facebook Product Sets** once you enable this setting from your end, and **GPC & Price Recommendations** syncing from Google Merchant Center. Everything under one plugin.
+
+
+= How AI-powered Feed Optimisation works? =
+We provide our **built-in AI-powered Feed Optimisation** feature that automatically identifies products that are missing attributes and generates them. Once improved, the updated product data is submitted to all integrated channels. You can choose to review changes before they are submitted. Optimisation cost starts at the lowest price of $1 USD for 25 products.
+
+
+= How GPC Recommendations and Price Recommendations work =
+**Google Product Category (GPC) Recommendations:** Our plugin syncs Google Product Category suggestions directly from Google Merchant Center and applies automatically to improve overall product performance.
+
+**Price Recommendations:** These are sale price suggestions synced from Google Merchant Center, based on market trends, and your product's ad performance over the past 7 days. You can review the projected impact and apply the suggestions. An export to CSV option is also available within our plugin and CSV file will be sent directly to your notification email address.
+
+= How to enable Google Customer Match Lists and how does it help? =
+Google Customer Match lets you use your own customer (first-party) data: like email addresses, phone numbers or physical addresses collected through your WooCommerce store, to remarket audiences across Google Search, YouTube, Gmail, and Display. The plugin automatically creates three audience lists: All Visitors, Cart Abandoners, and Past Buyers. First-party data is securely hashed and submitted to Google.
+
+= How does Google Customer Reviews work? =
+After a customer completes a purchase, they see an opt-in prompt on your order confirmation page asking if they'd like to rate their experience. If they agree, Google sends them a short survey after their order is delivered. The ratings build your Google Store Rating, the ratings that appear under your Shopping and Search Ads, making your ads more trustworthy and improving click-through rates. The plugin handles the entire setup without any coding expertise.
+
+= Who can use the Local Inventory Feed feature? = 
+If you run a physical store alongside your WooCommerce store, Local Inventory Feed lets you advertise in-store products at your specific store location on Google Shopping. Nearby shoppers searching for products you carry can see an "Nearby" indicator on your ad, driving foot traffic to your physical location.
+
+= How to enable Facebook Product Sets in plugin? =
+Facebook Product Sets are groups of products inside your Facebook (Meta) Catalog that you can target with specific ad campaigns. With Simprosys, your WooCommerce categories are automatically mapped and submitted as Product Sets in your Facebook (Meta) Catalog when you enable the feature from your Facebook settings page.
+
+= Is there a limit on how many products I can submit? = 
+No. You can submit **unlimited products** to Google, Microsoft Advertising, and Facebook (Meta). However, to submit the products, we have various plans available based on the number of published products in your WooCommerce store, starting from as low as $2.99/month for up to 50 products.
+
+= What product attributes can I manage with this plugin? =
+You can customise and submit a wide range of attributes including Title, Description, GTIN, Brand, Shipping, Custom Labels, Product Type, Google Product Category, Age Group, Gender, Size, Color, Material, Pattern, Unit Pricing, and Cost of Goods Sold (COGS). The **AI Optimisation feature** can also **automatically** generate data for various **missing attributes** for eligible products.
+
+
+= Does your plugin have a variable submission preference? =
+Yes. You can submit all variants of a product or just the first variant, based on 
+- The cheapest price
+- Date of creation or
+- WooCommerce position order.
 
 = How frequently is my product feed refreshed? =
-- If you update your WooCommerce product feed, our plugin syncs **automatically** and submit them to all integrated advertising platforms.
-- If no changes are made, our plugin updates your feed at regular intervals to ensure products stay **active**.
-
-= Why should I subscribe to your plugin? =
-Our plugin is an **all-in-one solution** for managing product feeds across multiple channels and key benefits include:
-
-- **Automated feed synchronization** for Google, Meta and Microsoft Advertising
-- Seamless Google PMax & Microsoft Advertising campaign management
-- Advanced feed optimization with title, description, and GTIN customization 
-- Multiple country feed submission to maximize global reach for Google
-- Google Customer Reviews integration to boost credibility
-- Enhanced tracking with GA4, Google Ads, and Meta Pixel
-- Bulk product filtering, category management, and dynamic remarketing
-
-= Why should I use an API feed instead of an XML feed? =
-- **Faster synchronization:** Content API updates products in **real-time** (within 30 minutes), while XML feeds rely on manual updates.
-- **Better performance:** Unlike XML feeds, API feeds **don’t slow down your WooCommerce store.**
-- **Automatic syncing:** API feeds **eliminate the need for manual uploads** and keep your product data **up-to-date.**
+- If you update your WooCommerce product feed, our plugin syncs **automatically** and submit them to all integrated advertising platforms in real time without any hassle.
+- If no changes are made, our plugin updates your feed at regular intervals to keep your  products **active** on all connected marketing channels.
 
 = What product attributes can I optimize with this plugin? =
-Optimizing product attributes is key to **better search visibility and ad performance.** Our plugin allows you to customize:
+Optimising product attributes is key to **better search visibility and ad performance.** Our plugin allows you to customize most of the attributes through multiple methods, such as Bulk Edit or Automated Rule or CSV import/export methods. Also, you can use our AI optimisation feature to optimise your product feed.
 
+
+Below are the important attributes that you can optimize directly in our plugin. 
 - Title & Description
 - GTINs, Brand, Shipping & Custom Labels
 - Product Type & Google Product Categories
 - Age Group, Gender, Size, Color, Material, Pattern
 - Unit Pricing Measure, Base Measure, and COGS (Cost of Goods Sold)
 
+= Does the plugin append UTM parameters to product URLs? =
+Yes. We have an option to append UTM parameters for all marketing channels that automatically append UTM parameters to your product URLs to track conversions and measure ad performance across Google, Microsoft Advertising, and Facebook (Meta).
+
 = Do you assist with Google Merchant Center account suspensions? =
-Yes! We analyze your store setup and **provide recommendations** to help resolve account suspensions. However, reinstatement decisions **ultimately depend on Google.**
-
-= Is there a product limit for feed generation? =
-No! You can submit **unlimited products** to Google, Microsoft Advertising, and Meta with our plugin.
-
-= Does your plugin support variable products? =
-Yes! You can submit:
-
-- **All variants** of a product
-- **First variant only,** based on:
-- Cheapest variant
-- Date of creation
-- WooCommerce position order
-
-= Is your plugin compatible with third-party WooCommerce plugins? =
-Yes! We support multiple plugins for enhanced functionality, including:
-
-- [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/)
-- [All-in-One SEO](https://wordpress.org/plugins/all-in-one-seo-pack)
-- [Rank Math SEO](https://wordpress.org/plugins/seo-by-rank-math)
-- [SEOPress - On Site SEO](https://wordpress.org/plugins/wp-seopress)
-- [WooCommerce UPC, EAN, and ISBN](https://wordpress.org/plugins/woo-add-gtin)
-- Yoast SEO: WooCommerce (Paid)
-- [Custom Product Tabs for WooCommerce](https://wordpress.org/plugins/yikes-inc-easy-custom-woocommerce-product-tabs)
-- WooCommerce Additional Product Identifiers fields
-- WooCommerce Custom Product Brand
-- [Advanced Shipment Tracking for WooCommerce](https://wordpress.org/plugins/woo-advanced-shipment-tracking/)
-- [Orders Tracking for WooCommerce](https://wordpress.org/plugins/woo-orders-tracking)
-- [Complianz - GDPR/CCPA Cookie Consent](https://wordpress.org/plugins/complianz-gdpr/)
-- [CookieYes - Cookie Banner for Cookie Consent (Easy to setup GDPR/CCPA Compliant Cookie Notice)](https://wordpress.org/plugins/cookie-law-info/)
-
-= How do I set up a Google Shopping product feed? =
-Follow our step-by-step guide: [Google Shopping Integration](https://support.simprosys.com/faq/step-by-step-integration-guide-for-shopping-feed-for-google)
-
-= How do I set up a Facebook (Meta) product feed? =
-Get started with Facebook (Meta) product feeds: [Facebook (Meta) Integration Guide](https://support.simprosys.com/faq/step-by-step-integration-guide-to-link-the-facebook-business-account-with-our-plugin)
-
-= How do I integrate my Microsoft Advertising Shopping feed? =
-Refer to our setup guide: [Microsoft Advertising Merchant Center Integration](https://support.simprosys.com/faq/step-by-step-integration-of-microsoft-merchant-center-from-our-app)
+Yes! Our team reviews your store setup and **provides recommendations** to help resolve account suspensions. Final reinstatement **decisions rest with Google**, but we'll guide you through every step of the process.
 
 = Do you provide a feed file for affiliate marketing platforms? =
-Yes! Our plugin generates XML feeds compatible with Pinterest, TikTok, eBay, and other affiliate platforms using Google’s standard attribute format.
+Yes! Our plugin generates XML feed that is compatible with Pinterest, TikTok, eBay, and other affiliate marketing platforms using Google’s standard attribute format.
 
-= How do I enable Dynamic Remarketing & Conversion Tracking? =
-Set up Google Ads Dynamic Remarketing & Conversion Tracking with this guide: [Setup Guide](https://support.simprosys.com/faq/how-to-setup-google-conversion-tracking-and-dynamic-remarketing-tags)
-
-= How do I enable Google Enhanced Conversion Tracking? = 
-Follow our guide to set up Enhanced Conversions for more accurate conversion tracking: [Enhanced Conversion Setup](https://support.simprosys.com/faq/how-to-enable-google-enhanced-conversion-tracking-from-our-plugin)
-
-= How do I enable GA4 Event Tracking in the plugin? =
-Easily track visitor interactions with Google Analytics 4 (GA4) via our step-by-step guide: [GA4 Setup Guide](https://support.simprosys.com/faq/implement-google-analytics-4-ga4-tracking-from-the-api-feed-for-google-shopping-microsoft-and-facebook-plugin)
+= How do I get started? =
+**Google Shopping:** [https://support.simprosys.com/faq/step-by-step-integration-guide-for-shopping-feed-for-google](https://support.simprosys.com/faq/step-by-step-integration-guide-for-shopping-feed-for-google) 
+**Facebook (Meta):** [https://support.simprosys.com/faq/step-by-step-integration-guide-to-link-the-facebook-business-account-with-our-plugin](https://support.simprosys.com/faq/step-by-step-integration-guide-to-link-the-facebook-business-account-with-our-plugin )
+**Microsoft Advertising:** [https://support.simprosys.com/faq/step-by-step-integration-of-microsoft-merchant-center-from-our-app](https://support.simprosys.com/faq/step-by-step-integration-of-microsoft-merchant-center-from-our-app) 
 
 = What Product ID format does your plugin support? =
 You can choose the following Product ID formats:
-
 - SKU as Product ID 
 - Variant ID as Product ID (Ex: 123456789)
 - Variant ID with prefix "gla_" (Ex: gla_6789)
 - Product Group ID with Variant ID (Ex: 12345_6789)
 
-= Can I filter products and bulk edit my products for optimization? =
-Yes! Our plugin allows you to **filter products** based on various criteria and use the **bulk edit feature** to optimize attributes like **title, description, GTIN, and product categories.**
-
-= Does your plugin append UTM parameters? =
-Yes! You can **append UTM parameters** to your product URLs to track conversions and measure ad performance across Google, Microsoft Advertising, and Meta.
+= Can I filter products and bulk edit my products for optimisation? =
+Yes! Our plugin allows you to **filter products** based on various criteria and use the **bulk edit feature** to optimise attributes like **title, description, GTIN, and product categories.**and many more.
 
 == Screenshots ==
 1. Submit Products from preferred WooCommerce Categories
@@ -223,6 +220,10 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 5.3.1 =
+* Add: Added new chat support system
+* Fix: Fixed the issue related to cron scheduling for cart abandoners.
+
 = 5.3.0 =
 * New: Added new feature WooCommerce Categories as Facebook Product Sets
 * Improved: Purchase Conversion Tracking
@@ -358,5 +359,5 @@ Yes! You can **append UTM parameters** to your product URLs to track conversions
 
 == Upgrade Notice ==
 
-= 5.3.0 =
-Added new feature WooCommerce Categories as Facebook Product Sets, improved Purchase Conversion Tracking, and resolved multiple critical issues.
+= 5.3.1 =
+Added new chat support system, resolved critical issues.

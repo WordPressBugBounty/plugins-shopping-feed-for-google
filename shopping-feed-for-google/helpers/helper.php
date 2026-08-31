@@ -230,6 +230,21 @@ function pluginActivationRedirectGSF( $plugin ) {
 
 function pluginDeactivateGSF(){
   global $wpdb;
+    // Stop the abandoned-customer recurring action so it does not keep
+    // re-queueing itself in Action Scheduler after the plugin is disabled.
+    if ( class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
+        WP_GSF_Abandoned_Customers::gsf_unschedule_abandoned_cron();
+    }
+    delete_transient( 'gsf_has_active_webhook' );
+
+    // Drop the cached category-webhook flag so a re-activation re-queries
+    // instead of trusting a stale 12h transient.
+    if ( class_exists( 'WP_GSF_Category_Webhooks' ) ) {
+        WP_GSF_Category_Webhooks::gsf_clear_category_webhook_cache();
+    } else {
+        delete_transient( 'gsf_has_active_category_webhook' );
+    }
+
     $feedback_data = get_transient('gsf_deactivation_feedback') ?? '';
     $shopData = array(
      'is_activated' => 0,
