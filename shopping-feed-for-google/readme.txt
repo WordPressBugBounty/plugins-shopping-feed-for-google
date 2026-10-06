@@ -1,15 +1,15 @@
 === Product Feed for Google Shopping, Microsoft Advertising and 40+ Channels for WooCommerce Merchant  ===
 Contributors: Simprosys
 Tags: WooCommerce Product Feed, Google Shopping, Google Merchant Center, Conversion Tracking, Product Feed
-Requires at least: 4.4
+Requires at least: 4.5
 Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 5.3.1
+Stable tag: 5.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
-WooCommerce product feed plugin for Google, Microsoft & Facebook (Meta), including AI-powered optimisation, PMax, GA4 & Customer Match List. A 14-day free trial.
+WooCommerce product feed plugin for Google, Microsoft & Meta, including AI-powered optimisation, PMax, GA4 & Customer Match List. A 14-day free trial.
 
 
 == DESCRIPTION ==
@@ -220,6 +220,10 @@ Yes! Our plugin allows you to **filter products** based on various criteria and 
 5. Create and assign promotions within a few clicks
 
 == Changelog ==
+= 5.3.2 =
+* Fixed: Security-related issues
+* Improved: Automated Discount functionality
+
 = 5.3.1 =
 * Add: Added new chat support system
 * Fix: Fixed the issue related to cron scheduling for cart abandoners.
@@ -359,5 +363,5 @@ Yes! Our plugin allows you to **filter products** based on various criteria and 
 
 == Upgrade Notice ==
 
-= 5.3.1 =
-Added new chat support system, resolved critical issues.
+= 5.3.2 =
+Upgrade to the latest plugin version for important security fixes and improvements to Automated Discounts.

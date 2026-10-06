@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WP_GSF_Admin_Notifications' ) ) {
 
@@ -15,8 +16,8 @@ if ( ! class_exists( 'WP_GSF_Admin_Notifications' ) ) {
 
         public function enqueue_assets() {
 
-            wp_enqueue_style( 'gsf-notification-admin-style', plugin_dir_url( __DIR__ ) . 'assets/css/gsf-styles.min.css' );
-            wp_enqueue_script( 'gsf-notification-admin-js', plugin_dir_url( __DIR__ ) . 'assets/js/gsf-script.min.js', [], false, true );
+            wp_enqueue_style( 'gsf-notification-admin-style', plugin_dir_url( __DIR__ ) . 'assets/css/gsf-styles.min.css', [], WP_GSF_PLUGIN_VERSION );
+            wp_enqueue_script( 'gsf-notification-admin-js', plugin_dir_url( __DIR__ ) . 'assets/js/gsf-script.min.js', [], WP_GSF_PLUGIN_VERSION, true );
             wp_localize_script( 'gsf-notification-admin-js', 'GSF_Ajax', [
                 'nonce' => wp_create_nonce( 'gsf_dismiss_nonce' ),
                 'ajax_url' => admin_url( 'admin-ajax.php' )
@@ -88,7 +89,7 @@ if ( ! class_exists( 'WP_GSF_Admin_Notifications' ) ) {
 
         private function render_notification($notifications) {
             $notification_type = $notifications[0]['type'] ?? 'info';
-            echo "<div class='gsf-wp-carousel-main notice notice-{$notification_type}'>";
+            echo "<div class='gsf-wp-carousel-main notice notice-" . esc_attr( $notification_type ) . "'>";
                 echo "<div class='gsf-wp-carousel-outer'>";
                     echo "<div class='gsf-wp-carousel-container'>";
                         foreach ($notifications as $notification) {
@@ -137,24 +138,54 @@ if ( ! class_exists( 'WP_GSF_Admin_Notifications' ) ) {
 
             $forever_attr = $forever_dismissible ? '1' : '0';
 
-            echo "<div class='gsf-wp-carousel-slide {$classes}' data-type='{$type}' data-id='{$notification_id}' data-forever-dismissible='{$forever_attr}'>
+            ?>
+            <div class='gsf-wp-carousel-slide <?php echo esc_attr( $classes ); ?>' data-type='<?php echo esc_attr( $type ); ?>' data-id='<?php echo esc_attr( $notification_id ); ?>' data-forever-dismissible='<?php echo esc_attr( $forever_attr ); ?>'>
                 <div class='gsf-wp-carousel-inner'>
                     <div class='gsf-notification-icon'>
-                        <img src='".plugin_dir_url( __DIR__ )."assets/img/WC_GSF_Notification_icon.svg' alt='Simprosys' />
+                        <img src='<?php echo esc_url( plugin_dir_url( __DIR__ ) . 'assets/img/WC_GSF_Notification_icon.svg' ); ?>' alt='Simprosys' />
                     </div>
                     <div>
-                        <div class='gsf-notification-title'>{$title}</div>
-                        <div class='gsf-notification-content'><div class='gsf-notification-detail'>{$message}</div></div>
+                        <div class='gsf-notification-title'><?php echo esc_html( $title ); ?></div>
+                        <div class='gsf-notification-content'><div class='gsf-notification-detail'><?php echo wp_kses( $this->add_login_nonce( $message ), $this->get_allowed_message_html() ); ?></div></div>
                     </div>
                 </div>
-            </div>";
+            </div>
+            <?php
+        }
+
+        // Add a nonce field to every login form (posts "wp_gsf_app_redirect") in the notification message
+        private function add_login_nonce( $message ) {
+            if ( false === strpos( $message, 'wp_gsf_app_redirect' ) ) {
+                return $message;
+            }
+            $nonce_field = wp_nonce_field( 'wp_gsf_app_redirect_app_button_clicked', '_wpnonce', false, false );
+            return str_replace( '</form>', $nonce_field . '</form>', $message );
+        }
+
+        // Post HTML plus the form fields used by the notification login button
+        private function get_allowed_message_html() {
+            $allowed_html = wp_kses_allowed_html( 'post' );
+            $allowed_html['form'] = array(
+                'method' => true,
+                'action' => true,
+                'target' => true,
+            );
+            $allowed_html['input'] = array(
+                'type'  => true,
+                'name'  => true,
+                'value' => true,
+                'id'    => true,
+                'class' => true,
+                'style' => true,
+            );
+            return $allowed_html;
         }
 
         public function gsf_dismiss_notice() {
             check_ajax_referer( 'gsf_dismiss_nonce', 'nonce' );
             
-            $gsf_notice_id = sanitize_text_field( $_POST['gsf_notice_id'] ?? '' );
-            $dismiss_days  = sanitize_text_field( $_POST['dismiss_days'] ?? 1 );
+            $gsf_notice_id = sanitize_text_field( wp_unslash( $_POST['gsf_notice_id'] ?? '' ) );
+            $dismiss_days  = sanitize_text_field( wp_unslash( $_POST['dismiss_days'] ?? 1 ) );
             if ( empty( $gsf_notice_id ) || empty( $dismiss_days ) ) wp_send_json_error();
 
             $user_id   = get_current_user_id();
@@ -164,7 +195,7 @@ if ( ! class_exists( 'WP_GSF_Admin_Notifications' ) ) {
             if ( $dismiss_days === 'forever' ) {
                 $dismissed[ $gsf_notice_id ] = 'forever';
             } else {
-                $dismissed[ $gsf_notice_id ] = date( 'Y-m-d H:i:s', strtotime( '+' . $dismiss_days . ' days' ) );
+                $dismissed[ $gsf_notice_id ] = gmdate( 'Y-m-d H:i:s', strtotime( '+' . $dismiss_days . ' days' ) );
             }
             update_user_meta( $user_id, '_gsf_dismissed_notices', $dismissed );
     

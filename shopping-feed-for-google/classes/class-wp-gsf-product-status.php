@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class GSF_WC_Product_Status {
 
 	private $meta_data_key = 'gsfwc_product_feed_status';
@@ -67,10 +68,10 @@ class GSF_WC_Product_Status {
             return;
         }
 		wp_enqueue_style( 'gsf-product-admin-style', plugin_dir_url( __DIR__ ) . 'assets/css/gsf-product-feed-styles.min.css',[], time());
-		wp_enqueue_script( 'gsf-product-feed-admin-js', plugin_dir_url( __DIR__ ) . 'assets/js/gsf-product-feed-admin.min.js', [], false, true );
+		wp_enqueue_script( 'gsf-product-feed-admin-js', plugin_dir_url( __DIR__ ) . 'assets/js/gsf-product-feed-admin.min.js', [], WP_GSF_PLUGIN_VERSION, true );
 		wp_localize_script( 'gsf-product-feed-admin-js', 'GSF_Product_Ajax', [
 			'nonce'     => wp_create_nonce( 'wp_create_nonce' ),
-			'ajax_url'  => admin_url( 'admin-ajax.php' )
+			'ajax_url'  => esc_url( admin_url( 'admin-ajax.php' ) )
 		]);
     }
 
@@ -84,7 +85,6 @@ class GSF_WC_Product_Status {
             if(get_option('wp_gsf_plugin_status_update') === 'Integrated'){
                 if (is_array($meta) && !empty($meta)) {
                     $platforms  = ['google', 'facebook', 'microsoft'];
-                    $output     = [];
 
                     foreach ($platforms as $platform) {
                         $status_key = "{$platform}_status";
@@ -94,12 +94,18 @@ class GSF_WC_Product_Status {
                         $status_color   = $meta[$status_key]['color'] ?? 'red';
                         $errors_raw     = $meta[$error_key] ?? '';
 
-                        $img = isset($this->icon_map[$platform]) && $this->icon_map[$platform]
-                            ? '<img class="gsfwc-feed-platform-icon" src="'. $this->icon_map[$platform] . '"
-                            onerror="this.src=`'. plugin_dir_path(__DIR__) .'assets/img/icon-not-found.svg`">'
-                            : ucfirst($platform);
+                        $icon = [
+                            'Pending'           => WP_GSF_CDN_IMAGES_PATH.'images/pending-icon.svg',
+                            'Warning'           => WP_GSF_CDN_IMAGES_PATH.'images/warning-icon.svg',
+                            'Error'             => WP_GSF_CDN_IMAGES_PATH.'images/error-icon.svg',
+                            'Submitted'         => WP_GSF_CDN_IMAGES_PATH.'images/submission-icon.svg',
+                            'Excluded'          => WP_GSF_CDN_IMAGES_PATH.'images/exclude-icon.svg',
+                            'ReachedLimit'      => WP_GSF_CDN_IMAGES_PATH.'images/reach-limit-icon.svg',
+                            'IntegrationPending'=> WP_GSF_CDN_IMAGES_PATH.'images/pending-integration-icon.svg',
+                            'SubmitWithErrors'  => WP_GSF_CDN_IMAGES_PATH.'images/submitted_warning_single.svg',
+                        ];
 
-                        if ($status_code !== '') {
+                        if ($status_code !== '' && isset($icon[$status_code])) {
                             $tooltip = $class = '';
                             
                             if($errors_raw != ''){
@@ -107,43 +113,31 @@ class GSF_WC_Product_Status {
                                 '<style=list-style-type: disc;'.$errors_raw.'</style>';
                                 $class = 'tips';
                             }
-
-                            $icon = [
-                                'Pending'           => WP_GSF_CDN_IMAGES_PATH.'images/pending-icon.svg',
-                                'Warning'           => WP_GSF_CDN_IMAGES_PATH.'images/warning-icon.svg',
-                                'Error'             => WP_GSF_CDN_IMAGES_PATH.'images/error-icon.svg',
-                                'Submitted'         => WP_GSF_CDN_IMAGES_PATH.'images/submission-icon.svg',
-                                'Excluded'          => WP_GSF_CDN_IMAGES_PATH.'images/exclude-icon.svg',
-                                'ReachedLimit'      => WP_GSF_CDN_IMAGES_PATH.'images/reach-limit-icon.svg',
-                                'IntegrationPending'=> WP_GSF_CDN_IMAGES_PATH.'images/pending-integration-icon.svg',
-                                'SubmitWithErrors'  => WP_GSF_CDN_IMAGES_PATH.'images/submitted_warning_single.svg',
-                            ];
-
-                            $status_icon = "<img src='".$icon[$status_code]."' alt='Error' onerror='this.src=`". plugin_dir_path(__DIR__) ."assets/img/icon-not-found.svg`' class='gsfwc-feed-status-icon'/>";
-
-                            $output[] = "<div class='gsfwc-error-status'>
-                                {$img} 
-                                <span class='gsfwc-status-code {$class}' data-tip='" . esc_attr($tooltip) . "' > 
-                                    {$status_icon}
+                            ?>
+                            <div class='gsfwc-error-status'>
+                                <?php if (!empty($this->icon_map[$platform])) : ?>
+                                    <img class="gsfwc-feed-platform-icon" src="<?php echo esc_url($this->icon_map[$platform]); ?>">
+                                <?php else : ?>
+                                    <?php echo esc_html(ucfirst($platform)); ?>
+                                <?php endif; ?>
+                                <span class='gsfwc-status-code <?php echo esc_attr($class); ?>' data-tip='<?php echo esc_attr($tooltip); ?>' > 
+                                    <img src='<?php echo esc_url($icon[$status_code]); ?>' alt='Error' class='gsfwc-feed-status-icon'/>
                                 </span>
-                            </div>";
-                            
+                            </div>
+                            <?php
                         }
                     }
-                    echo implode('', $output);
                 } else {
                     echo '<span style="color:#888;">-</span>';
                 }
             } else {
-                $icon = WP_GSF_CDN_IMAGES_PATH.'images/pending-integration-icon.svg';
-
-                $status_icon = "<img src='".$icon."' alt='Error' onerror='this.src=`". plugin_dir_path(__DIR__) ."assets/img/icon-not-found.svg`' class='gsfwc-feed-status-icon'/>";
-                $output[] = "<div class='gsfwc-error-status'>
-                    <span class='gsfwc-status-code tips' data-tip='" . esc_attr($pending_integration_tooltip) . "' > 
-                        {$status_icon}
+                ?>
+                <div class='gsfwc-error-status'>
+                    <span class='gsfwc-status-code tips' data-tip='<?php echo esc_attr($pending_integration_tooltip); ?>' > 
+                        <img src='<?php echo esc_url($pending_integration_icon); ?>' alt='Error' class='gsfwc-feed-status-icon'/>
                     </span>
-                </div>";
-                echo implode('', $output);
+                </div>
+                <?php
             }
         }
     }
@@ -151,7 +145,7 @@ class GSF_WC_Product_Status {
     public function gsfwc_add_status_meta_box() {
         add_meta_box(
             'gsfwc_product_detail_page',
-            __('Simprosys Product Feed Status', 'textdomain'),
+            __('Simprosys Product Feed Status', 'shopping-feed-for-google'),
             [$this, 'gsfwc_render_status_meta_box'],
             'product',
             'side',
@@ -168,7 +162,7 @@ class GSF_WC_Product_Status {
 		
 		foreach ($this->icon_map as $key => $image_url) {
 			$active = !$activeSet ? 'nav-tab-active' : '';
-			echo '<li class="tabs"><a href="#tab-' . $key . '" class="' . $active . '"><img src="' . esc_url($image_url) . '"style=height:16px;"></a></li>';
+			echo '<li class="tabs"><a href="#tab-' . esc_attr($key) . '" class="' . esc_attr($active) . '"><img src="' . esc_url($image_url) . '" style="height:16px;"></a></li>';
 			$activeSet = true;
 		}
         echo '</ul>';
@@ -184,12 +178,12 @@ class GSF_WC_Product_Status {
             $active = $count == 0 ? 'display:block;' : 'display:none;';
 			$status_key = "{$key}_status";
 			$status_code = $value[$status_key]['label'] ?? '';
-            echo '<div style="' . $active . '" id="tab-' . $key . '" class="gsfwc-product-status-icon gsfwc-tabs-panel" ' . $active . '>';
+            echo '<div style="' . esc_attr($active) . '" id="tab-' . esc_attr($key) . '" class="gsfwc-product-status-icon gsfwc-tabs-panel">';
             if(get_option('wp_gsf_plugin_status_update') === 'Integrated'){
                 if ($value == "" || empty($value)) { 
                     echo '<div class="gsfwc-product-feed-status"><h2><b>Either product is not synced or missing category or failed to fetch error.</b></h2></div>';
                 } else if (isset($value) && !empty($value["{$key}_errors"])) {
-                    echo $value["{$key}_errors"];
+                    echo wp_kses_post($value["{$key}_errors"]);
                 } else if(isset($value) && isset($value[$status_key]) && in_array($status_code,['Submitted'])){
                     echo ' <div class="gsfwc-product-feed-status"> <h2><b>Awesome! Product submitted.</b></h2></div>';
                 } else if(isset($value) && isset($value[$status_key]) && in_array($status_code,['Excluded'])){
@@ -199,14 +193,14 @@ class GSF_WC_Product_Status {
                 } else if(isset($value) && isset($value[$status_key]) && in_array($status_code,['Pending'])){
                     echo '<div class="gsfwc-product-feed-status"><h2><b>The product is not submitted yet.</b></h2></div>';
                 } else {
-                    echo '<div class="gsfwc-channel-not-integrated"><span>'.$message[$key].'</span>';
-                    echo '<a href="'. admin_url('admin.php?page=shopping-feed-for-google').'" class="button button-primary">
+                    echo '<div class="gsfwc-channel-not-integrated"><span>'.esc_html($message[$key]).'</span>';
+                    echo '<a href="'. esc_url(admin_url('admin.php?page=shopping-feed-for-google')).'" class="button button-primary">
                         Configure Now
                     </a></div>';
                 }
             } else {
-                echo '<div class="gsfwc-channel-not-integrated"><span>'.$message[$key].'</span>';
-                echo '<a href="'. admin_url('admin.php?page=shopping-feed-for-google').'" class="button button-primary">
+                echo '<div class="gsfwc-channel-not-integrated"><span>'.esc_html($message[$key]).'</span>';
+                echo '<a href="'. esc_url(admin_url('admin.php?page=shopping-feed-for-google')).'" class="button button-primary">
                     Configure Now
                 </a></div>';
             }
@@ -218,12 +212,13 @@ class GSF_WC_Product_Status {
     }
 	
 	public function gsfwc_ajax_refresh_product_status() {
+        check_ajax_referer( 'wp_create_nonce', 'nonce' );
         
         $client = new WP_GSF_HttpClient();
         $response = $client->callAPI('pwc/check-integration-status',[], 'POST');
         if($response->status == 1){
             update_option('wp_gsf_plugin_status_update', "Integrated");
-            $selected_product_ids = !empty($_POST['product_ids']) ? array_map('absint', (array) $_POST['product_ids']) : [];
+            $selected_product_ids = !empty($_POST['product_ids']) ? array_map('absint', (array) wp_unslash( $_POST['product_ids'] )) : [];
             if (!empty($selected_product_ids)) {
                 // Use only selected product IDs
                 $product_ids = $selected_product_ids;

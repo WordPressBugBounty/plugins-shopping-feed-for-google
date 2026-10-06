@@ -1,4 +1,5 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class GSF_WC_Tips {
     public static function init() {
         add_action( 'wp_dashboard_setup', [ __CLASS__, 'gsf_wc_add_tips'] );
@@ -90,7 +91,7 @@ class GSF_WC_Tips {
                 display: inline-block;
                 width: 30px;
                 height: 25px;
-                background-image: url("' . $logo_url . '");
+                background-image: url("' . esc_url( $logo_url ) . '");
                 background-size: auto 100%;
                 background-repeat: no-repeat;
             }

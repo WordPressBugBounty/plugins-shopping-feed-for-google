@@ -5,9 +5,11 @@ Plugin Name: Simprosys Product Feed For WooCommerce
 Requires Plugins: woocommerce
 Plugin URI: http://wordpress.org/plugins/shopping-feed-for-google/
 Description: Sync WooCommerce products to Google, Microsoft Advertising & Facebook in real time and boost visibility with Simprosys AI Optimisation.
-Version: 5.3.1
+Version: 5.3.2
 Author: Simprosys InfoMedia
 Author URI: https://simprosys.com/
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 require plugin_dir_path( __FILE__ ) . 'config/const.php';
 require plugin_dir_path( __FILE__ ) . 'classes/class-wp-gsf.php';
@@ -19,13 +21,27 @@ $gsf_plugin = new WP_GSF_Controller();
 $gsf_plugin->runGSF();
 
 
-if (isset($_POST['wp_gsf_app_redirect'])) {
-    $ref = isset($_POST['wp_gsf_ref']) ? $_POST['wp_gsf_ref'] : '';
+// Login button in admin notifications (posts "wp_gsf_app_redirect" and "wp_gsf_ref")
+function appRedirectGSF() {
+    if ( ! isset( $_POST['wp_gsf_app_redirect'] ) ) {
+        return;
+    }
+    check_admin_referer( 'wp_gsf_app_redirect_app_button_clicked' );
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    $ref = isset( $_POST['wp_gsf_ref'] ) ? sanitize_text_field( wp_unslash( $_POST['wp_gsf_ref'] ) ) : '';
     $client = new WP_GSF_HttpClient();
     $resultsData = $client->callAPI("verify-api-token",['ref' => $ref]);
     
     if(!empty($resultsData) && isset($resultsData->auth_url)){
-       header("Location: ".$resultsData->auth_url);
+       // Allow redirect to the Simprosys app host only
+       add_filter( 'allowed_redirect_hosts', function( $hosts ) {
+           $hosts[] = wp_parse_url( WP_GSF_API_URL, PHP_URL_HOST );
+           return $hosts;
+       } );
+       wp_safe_redirect( esc_url_raw( $resultsData->auth_url ) );
        exit; // Added By JG 06/12/2021
     } else {
       if(!empty($resultsData) && isset($resultsData->message)){
@@ -35,11 +51,11 @@ if (isset($_POST['wp_gsf_app_redirect'])) {
       }
     }
 }
+add_action( 'admin_init', 'appRedirectGSF' );
 
 if(isCheckWoocommerceAvailableGSF()){
     add_action( 'admin_menu', 'addAdminMenuGSF' );
-    add_action( 'wp_ajax_gsf_wp_action', 'registerStoreGSF' ); // If "Woocommerce" is not activate this hooks are useless
-    add_action( 'wp_ajax_nopriv_gsf_wp_action', 'registerStoreGSF'); // If "Woocommerce" is not activate this hooks are useless
+    add_action( 'wp_ajax_gsf_wp_action', 'ajaxRegisterStoreGSF' ); // If "Woocommerce" is not activate this hooks are useless
     add_action( 'wp_head', 'addGoogleVerificationTokenGSF' ); // If "Woocommerce" is not activate this hooks are useless
 
     // Display errors if found
@@ -53,17 +69,25 @@ add_action( 'admin_notices', 'generalAdminNoticeGSF' );
 /*  google conversion script Code */
 
 function addGoogleConversionTrackingScriptGSF() {
-    if (!wp_script_is('jquery', 'registered')) {
-       wp_register_script( 'jquery.min.js', plugin_dir_url(__FILE__).'js/jquery.min.js');
-       wp_enqueue_script( 'jquery.min.js' );
+    // Theme may have deregistered jQuery; restore the core copy so tracking still works
+    if ( ! wp_script_is( 'jquery', 'registered' ) ) {
+        // Core ships jquery.min.js since WordPress 5.6, jquery.js before that
+        $gsf_jquery_file = version_compare( get_bloginfo( 'version' ), '5.6', '>=' ) ? 'jquery.min.js' : 'jquery.js';
+        wp_register_script( 'jquery', includes_url( 'js/jquery/' . $gsf_jquery_file ), array(), get_bloginfo( 'version' ), false );
     }
-    wp_enqueue_script( 'gsfwc-script', getWpGoogleConversionTrackingScriptGSF(), array ( 'jquery' )); /*Edited by DJ 28/6/21 for enqueue script after jquery.min.js */
+    wp_enqueue_script( 'gsf-tracking-nonce-js', plugin_dir_url( __FILE__ ) . 'assets/js/gsf-tracking-nonce.js', array( 'jquery' ), WP_GSF_PLUGIN_VERSION, false );
+    wp_localize_script( 'gsf-tracking-nonce-js', 'GSF_Tracking', array(
+        'nonce'    => wp_create_nonce( 'gsfwc_ajax_nonce' ),
+        'ajax_url' => admin_url( 'admin-ajax.php' ),
+    ) );
+    // Loaded in the header so the tracking setup runs before other tags
+    wp_enqueue_script( 'gsfwc-script', getWpGoogleConversionTrackingScriptGSF(), array ( 'jquery', 'gsf-tracking-nonce-js' ), WP_GSF_PLUGIN_VERSION, false );
 }
 
 if(isWpGoogleConversionTrackingEnableGSF()){
     
     /* Add GoogleConversionTrackingScriptGSF */
-    add_action( 'wp_enqueue_scripts', 'addGoogleConversionTrackingScriptGSF' );
+    add_action( 'wp_enqueue_scripts', 'addGoogleConversionTrackingScriptGSF', 20 );
     
     /* product Page view Event */
     add_action(get_option('wp_gsf_product_page_view','woocommerce_before_single_product'),'productViewItemGSF');
@@ -117,13 +141,15 @@ if(isEnableGSFAdvancedFeature('gsf_scp_discount')){
 //Define AJAX URL
 function gsfwc_plugin_ajaxurl() {
    echo '<script type="text/javascript">
-           var gsfwc_ajaxurl = "' . admin_url('admin-ajax.php') . '";
+           var gsfwc_ajaxurl = "' . esc_url(admin_url('admin-ajax.php')) . '";
          </script>';
 }
 add_action('wp_head', 'gsfwc_plugin_ajaxurl');
 if(isWpGoogleConversionTrackingEnableGSF()){
     add_action( 'wp_ajax_ajaxRequestGSF', 'ajaxRequestGSF' );
     add_action( 'wp_ajax_nopriv_ajaxRequestGSF', 'ajaxRequestGSF' ); 
+    add_action( 'wp_ajax_gsfwc_refresh_nonce', 'refreshNonceGSF' );
+    add_action( 'wp_ajax_nopriv_gsfwc_refresh_nonce', 'refreshNonceGSF' );
 }
 
 /* listing page conversion tag ajax call */
@@ -134,9 +160,9 @@ add_filter( 'plugin_row_meta', 'pluginRowMetaGSF', 10, 2 );
 function pluginRowMetaGSF( $links, $file ) {    
     if ( plugin_basename( __FILE__ ) == $file ) {
         $row_meta = array(
-          'Docs'    => '<a href="' . esc_url( 'https://support.simprosys.com/shopping-feed-for-google' ) . '" target="_blank" aria-label="' . esc_attr__( 'Shopping Feed For Google-WooCommerce', 'domain' ) . '">' . esc_html__( 'Docs', 'domain' ) . '</a>',          
-          'Support' => '<a href="' . esc_url( 'mailto:support@simprosys.com' ) . '" target="_blank" aria-label="' . esc_attr__( 'Support', 'email' ) . '">' . esc_html__( 'Support', 'email' ) . '</a>',
-          'Terms Of Service'    => '<a href="' . esc_url( 'https://support.simprosys.com/faq/terms-of-service-shopping-feed-for-google-shopping-plugin' ) . '" target="_blank" aria-label="' . esc_attr__( 'Shopping Feed For Google-WooCommerce', 'domain' ) . '">' . esc_html__( 'Terms Of Service', 'domain' ) . '</a>'   
+          'Docs'    => '<a href="' . esc_url( 'https://support.simprosys.com/shopping-feed-for-google' ) . '" target="_blank" aria-label="' . esc_attr__( 'Shopping Feed For Google-WooCommerce', 'shopping-feed-for-google' ) . '">' . esc_html__( 'Docs', 'shopping-feed-for-google' ) . '</a>',          
+          'Support' => '<a href="' . esc_url( 'mailto:support@simprosys.com' ) . '" target="_blank" aria-label="' . esc_attr__( 'Support', 'shopping-feed-for-google' ) . '">' . esc_html__( 'Support', 'shopping-feed-for-google' ) . '</a>',
+          'Terms Of Service'    => '<a href="' . esc_url( 'https://support.simprosys.com/faq/terms-of-service-shopping-feed-for-google-shopping-plugin' ) . '" target="_blank" aria-label="' . esc_attr__( 'Shopping Feed For Google-WooCommerce', 'shopping-feed-for-google' ) . '">' . esc_html__( 'Terms Of Service', 'shopping-feed-for-google' ) . '</a>'   
         );
 
         return array_merge( $links, $row_meta );

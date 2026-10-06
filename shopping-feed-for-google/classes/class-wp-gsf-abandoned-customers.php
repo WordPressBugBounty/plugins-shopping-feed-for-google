@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
 
@@ -156,9 +157,6 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
                 return;
             }
 
-            global $wpdb;
-            $table = $wpdb->prefix . 'woocommerce_sessions';
-
             $abandoned_sessions = get_option(self::ABANDONED_KEY, []);
             if (empty($abandoned_sessions)) return;
 
@@ -173,46 +171,36 @@ if ( ! class_exists( 'WP_GSF_Abandoned_Customers' ) ) {
 
             if (empty($ready_sessions)) return;
 
-            $batch_size = 50;
-            $chunks = array_chunk($ready_sessions, $batch_size);
+            if ( ! class_exists( 'WC_Session_Handler' ) ) return;
 
-            foreach ($chunks as $chunk) {
-                // Fetch all session rows in this batch in a single query
-                $placeholders = implode(',', array_fill(0, count($chunk), '%s'));
-                $query = $wpdb->prepare(
-                    "SELECT session_key, session_value FROM $table WHERE session_key IN ($placeholders)",
-                    ...$chunk
-                );
-                $rows = $wpdb->get_results($query);
+            // Read sessions through WooCommerce's session API (uses the object cache) instead of querying the sessions table directly
+            $session_handler = new WC_Session_Handler();
 
-                if ( ! empty( $rows ) ) {
+            foreach ($ready_sessions as $session_id) {
+                $session_data = $session_handler->get_session( (string) $session_id, false );
 
-                    foreach ($rows as $row) {
-                        $session_data = maybe_unserialize($row->session_value);
-						
-                        if (!isset($session_data['cart']) || empty($session_data['cart'])) continue;
-                        if (!isset($session_data['customer']) || empty($session_data['customer'])) continue;
-
-                        // Fingerprint of the cart contents for this session
-                        $session_cart_hash = md5( maybe_serialize( $session_data['cart'] ) );
-
-                        // Fire webhook
-                        do_action('gsf_wp_abandoned_customer_hook', [
-							'gsf_session_id' => $row->session_key,
-							'session_hash' => $session_cart_hash,
-							'customer'       => maybe_unserialize($session_data['customer']),
-							'cart'       => maybe_unserialize($session_data['cart']),
-                        ]);
-
-                        // Remove processed session from option
-                        unset($abandoned_sessions[$row->session_key]);
-                    }
-                }else{
-                    // If no rows found, remove these session IDs from tracking
-                    foreach ($chunk as $session_id) {
-                        unset($abandoned_sessions[$session_id]);
-                    }
+                // Session no longer exists (expired/cleared): stop tracking it
+                if ( empty( $session_data ) || ! is_array( $session_data ) ) {
+                    unset($abandoned_sessions[$session_id]);
+                    continue;
                 }
+
+                if (!isset($session_data['cart']) || empty($session_data['cart'])) continue;
+                if (!isset($session_data['customer']) || empty($session_data['customer'])) continue;
+
+                // Fingerprint of the cart contents for this session
+                $session_cart_hash = md5( maybe_serialize( $session_data['cart'] ) );
+
+                // Fire webhook
+                do_action('gsf_wp_abandoned_customer_hook', [
+                    'gsf_session_id' => (string) $session_id,
+                    'session_hash'   => $session_cart_hash,
+                    'customer'       => maybe_unserialize($session_data['customer']),
+                    'cart'           => maybe_unserialize($session_data['cart']),
+                ]);
+
+                // Remove processed session from option
+                unset($abandoned_sessions[$session_id]);
             }
 
             // Save back updated option

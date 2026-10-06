@@ -10,6 +10,21 @@ if (! defined('ABSPATH')) exit; // Exit if accessed directly
  */
 class WP_GSF_Category_Products_Controller extends WP_REST_Controller
 {
+    const CACHE_GROUP = 'gsf_category_products';
+
+    /**
+     * Timestamp WordPress updates whenever items in the group ('terms' or 'posts') change.
+     * Same as wp_cache_get_last_changed(), which needs WordPress 4.7.
+     */
+    private function getLastChangedGSF($group)
+    {
+        $last_changed = wp_cache_get('last_changed', $group);
+        if (! $last_changed) {
+            $last_changed = microtime();
+            wp_cache_set('last_changed', $last_changed, $group);
+        }
+        return $last_changed;
+    }
 
     public function callHooksGSF()
     {
@@ -130,49 +145,74 @@ class WP_GSF_Category_Products_Controller extends WP_REST_Controller
         $per_page = min(100, max(1, absint($request->get_param('per_page'))));
         $offset   = ($page - 1) * $per_page;
 
-        $orderby_map = array(
-            'id'         => 't.term_id',
-            'name'       => 't.name',
-            'slug'       => 't.slug',
-            'count'      => 'count',
-        );
-        $orderby_raw = sanitize_key($request->get_param('orderby'));
-        $orderby_col = isset($orderby_map[$orderby_raw]) ? $orderby_map[$orderby_raw] : 't.term_id';
+        // Allowed sort keys; the query's ORDER BY picks the matching column (sort key and order are passed in through the "s" row)
+        $orderby_keys = array('id', 'name', 'slug', 'count');
+        $orderby_raw  = sanitize_key($request->get_param('orderby'));
+        $orderby      = in_array($orderby_raw, $orderby_keys, true) ? $orderby_raw : 'id';
 
         $order_raw = strtoupper(sanitize_text_field($request->get_param('order')));
         $order     = ($order_raw === 'DESC') ? 'DESC' : 'ASC';
 
-        $total = (int) $wpdb->get_var("
-            SELECT COUNT(*)
-            FROM {$wpdb->terms} t
-            INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-            WHERE tt.taxonomy = 'product_cat'
-        ");
+        // Cache key changes whenever categories or products change, so cached results are never stale
+        $cache_key = 'categories_' . md5(wp_json_encode(array($page, $per_page, $orderby, $order)))
+            . '_' . $this->getLastChangedGSF('terms') . '_' . $this->getLastChangedGSF('posts');
+        $cached    = wp_cache_get($cache_key, self::CACHE_GROUP);
 
-        $terms = $wpdb->get_results(
-            $wpdb->prepare("
-                SELECT
-                    t.term_id,
-                    t.name,
-                    t.slug,
-                    tt.parent,
-                    tt.description,
-                    COALESCE(pc.count, 0) AS count
+        if (is_array($cached)) {
+            $total = $cached['total'];
+            $terms = $cached['terms'];
+        } else {
+            $total = (int) $wpdb->get_var("
+                SELECT COUNT(*)
                 FROM {$wpdb->terms} t
                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-                LEFT JOIN (
-                    SELECT tr.term_taxonomy_id, COUNT(DISTINCT p.ID) AS count
-                    FROM {$wpdb->posts} p
-                    INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
-                    WHERE p.post_type   = 'product'
-                    AND   p.post_status = 'publish'
-                    GROUP BY tr.term_taxonomy_id
-                ) AS pc ON pc.term_taxonomy_id = tt.term_taxonomy_id
                 WHERE tt.taxonomy = 'product_cat'
-                ORDER BY {$orderby_col} {$order}
-                LIMIT %d OFFSET %d
-            ", $per_page, $offset)
-        );
+            ");
+
+            $terms = $wpdb->get_results(
+                $wpdb->prepare("
+                    SELECT
+                        t.term_id,
+                        t.name,
+                        t.slug,
+                        tt.parent,
+                        tt.description,
+                        COALESCE(pc.count, 0) AS count
+                    FROM {$wpdb->terms} t
+                    INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+                    LEFT JOIN (
+                        SELECT tr.term_taxonomy_id, COUNT(DISTINCT p.ID) AS count
+                        FROM {$wpdb->posts} p
+                        INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                        WHERE p.post_type   = 'product'
+                        AND   p.post_status = 'publish'
+                        GROUP BY tr.term_taxonomy_id
+                    ) AS pc ON pc.term_taxonomy_id = tt.term_taxonomy_id
+                    CROSS JOIN (SELECT %s AS orderby, %s AS sort_order) AS s
+                    WHERE tt.taxonomy = 'product_cat'
+                    ORDER BY
+                        CASE WHEN s.orderby = 'id'    AND s.sort_order = 'ASC'  THEN t.term_id END ASC,
+                        CASE WHEN s.orderby = 'id'    AND s.sort_order = 'DESC' THEN t.term_id END DESC,
+                        CASE WHEN s.orderby = 'name'  AND s.sort_order = 'ASC'  THEN t.name    END ASC,
+                        CASE WHEN s.orderby = 'name'  AND s.sort_order = 'DESC' THEN t.name    END DESC,
+                        CASE WHEN s.orderby = 'slug'  AND s.sort_order = 'ASC'  THEN t.slug    END ASC,
+                        CASE WHEN s.orderby = 'slug'  AND s.sort_order = 'DESC' THEN t.slug    END DESC,
+                        CASE WHEN s.orderby = 'count' AND s.sort_order = 'ASC'  THEN pc.count  END ASC,
+                        CASE WHEN s.orderby = 'count' AND s.sort_order = 'DESC' THEN pc.count  END DESC
+                    LIMIT %d OFFSET %d
+                ", $orderby, $order, $per_page, $offset)
+            );
+
+            // Don't cache a failed query
+            if (is_array($terms)) {
+                wp_cache_set($cache_key, array('total' => $total, 'terms' => $terms), self::CACHE_GROUP, DAY_IN_SECONDS);
+            }
+        }
+
+        // Query failed or no categories found, respond with an empty list
+        if (empty($terms) || !is_array($terms)) {
+            $terms = array();
+        }
 
         $data = array();
         foreach ($terms as $term) {
@@ -221,20 +261,28 @@ class WP_GSF_Category_Products_Controller extends WP_REST_Controller
             );
         }
 
-        $product_ids = array_map('intval', $wpdb->get_col(
-        	$wpdb->prepare("
-				SELECT p.ID
-				FROM {$wpdb->posts} p
-				INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
-				INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
-				WHERE p.post_type = 'product'
-				AND p.post_status = 'publish'
-				AND tt.taxonomy = 'product_cat'
-				AND tt.term_id = %d
-				ORDER BY p.ID ASC
-				LIMIT %d OFFSET %d
-			", $cat_id, $per_page, $offset)
-    	));
+        // Cache key changes whenever categories or products change, so cached results are never stale
+        $cache_key   = 'category_products_' . $cat_id . '_' . $page . '_' . $per_page
+            . '_' . $this->getLastChangedGSF('terms') . '_' . $this->getLastChangedGSF('posts');
+        $product_ids = wp_cache_get($cache_key, self::CACHE_GROUP);
+
+        if (! is_array($product_ids)) {
+            $product_ids = array_map('intval', $wpdb->get_col(
+                $wpdb->prepare("
+                    SELECT p.ID
+                    FROM {$wpdb->posts} p
+                    INNER JOIN {$wpdb->term_relationships} tr ON p.ID = tr.object_id
+                    INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                    WHERE p.post_type = 'product'
+                    AND p.post_status = 'publish'
+                    AND tt.taxonomy = 'product_cat'
+                    AND tt.term_id = %d
+                    ORDER BY p.ID ASC
+                    LIMIT %d OFFSET %d
+                ", $cat_id, $per_page, $offset)
+            ));
+            wp_cache_set($cache_key, $product_ids, self::CACHE_GROUP, DAY_IN_SECONDS);
+        }
         $total_count = (int) $category->count;
         $total_pages = (int) ceil($total_count / $per_page);
 

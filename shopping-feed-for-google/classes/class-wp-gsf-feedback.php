@@ -89,13 +89,13 @@ class WP_GSF_Feedback
                     <button type="button" class="gsf-feedback-modal-close"></button>
                 </div>
                 <div class="gsf-feedback-modal-body">
-                    <h4 class="gsf-feedback-caption"><?php echo esc_html('If you have a moment, please let us know why you are deactivating ').WP_GSF_PLUGIN_NAME; ?></h4>
+                    <h4 class="gsf-feedback-caption"><?php echo esc_html('If you have a moment, please let us know why you are deactivating ').esc_html(WP_GSF_PLUGIN_NAME); ?></h4>
                     <div class="gsf-form-checkbox-group gsf-form-group">
                         <div class="reason-heading-title"><strong>Select all that apply:</strong></div>
                         <?php foreach ($reasons as $key => $reason) { ?>
                             <div class="gsf-form-item">
-                                <input class="gsf-feedback-input-checkbox" id="reason_<?php echo $key; ?>" type="checkbox" value="<?php echo $reason; ?>" name="feedback[]" />
-                                <label class="gsf-feedback-label" for="reason_<?php echo $key; ?>"><?php echo $reason; ?></label>
+                                <input class="gsf-feedback-input-checkbox" id="reason_<?php echo esc_attr( $key ); ?>" type="checkbox" value="<?php echo esc_attr( $reason ); ?>" name="feedback[]" />
+                                <label class="gsf-feedback-label" for="reason_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $reason ); ?></label>
                             </div>
                         <?php } ?>
                     </div>

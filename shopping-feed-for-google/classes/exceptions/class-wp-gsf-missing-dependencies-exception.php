@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 // my-plugin-name/classes/exceptions/Missing_Dependencies_Exception.php
 class WP_GSF_Missing_Dependencies_Exception extends WP_GSF_Exception {
 

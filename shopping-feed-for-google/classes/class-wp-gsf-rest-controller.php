@@ -17,14 +17,14 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
       
     }
     
-    public function resetApiAllOptionsGSF(){
+    public function resetApiAllOptionsGSF( WP_REST_Request $request ){
         global $wpdb;
         $shop_secret_db = getWpShopSecretKeyGSF();
         $message        = "";
         $error          = 0;
         $action         = "";
-        $route_action   = getDataGSF('action');
-        $shop_secret    = getDataGSF('shop_secret');
+        $route_action   = $this->getTextParamGSF( $request, 'action' );
+        $shop_secret    = $this->getTextParamGSF( $request, 'shop_secret' );
 
         if(empty($shop_secret) || $shop_secret != $shop_secret_db){
             $error      = 1;
@@ -33,8 +33,8 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
         } else {
             switch ( $route_action ) {
                 case 'createUpdateOption':
-                    $option_key     = getDataGSF('option_key');
-                    $option_value   = getDataGSF('option_value');
+                    $option_key     = $this->getTextParamGSF( $request, 'option_key' );
+                    $option_value   = $this->getParamGSF( $request, 'option_value' );
                     
                     if(strpos($option_key, 'wp_gsf_') === 0){ //only allow gsf option keys to update.
                         if(!empty($option_key)){
@@ -54,7 +54,7 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
                     }
                 break;
                 case 'getShopData':
-                    $option_key = getDataGSF('option_key');
+                    $option_key = $this->getTextParamGSF( $request, 'option_key' );
                     return getShopDataGSF($option_key);
                 break;    
                 // get published product id for debugging
@@ -76,9 +76,9 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
 
                 case 'manageAdvanceSettings' :
                     $option_key      = 'wp_gsf_advanced_settings';
-                    $setting_key     = getDataGSF('option_key');
-                    $setting_status  = getDataGSF('option_status')?? "false";
-                    $setting_value   = getDataGSF('option_value') ?? "";
+                    $setting_key     = $this->getTextParamGSF( $request, 'option_key' );
+                    $setting_status  = $this->getTextParamGSF( $request, 'option_status' )?? "false";
+                    $setting_value   = $this->getParamGSF( $request, 'option_value' ) ?? "";
 
                     if(!empty($setting_key)){
                         setGSFAdvancedSettings($setting_key, $setting_status, $setting_value);
@@ -92,17 +92,17 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
                     }
                 break;
                 case 'getOrderDetails':
-                    $start_date = getDataGSF('start_date')?? null;
-                    $end_date   = getDataGSF('end_date')?? null;
+                    $start_date = $this->getTextParamGSF( $request, 'start_date' )?? null;
+                    $end_date   = $this->getTextParamGSF( $request, 'end_date' )?? null;
                     $result_with_dates = $this->getGSFOrderData($start_date, $end_date);
                     return json_encode($result_with_dates);
                 break;
                 case 'createMultipleOptions':
-                    $options_key     = getDataGSF('options_key');
+                    $options_key     = $this->getTextParamGSF( $request, 'options_key' );
                     if(strpos($options_key, 'wp_gsf_') === 0){ 
-                        $options_value   = $_REQUEST['options_value'] ?? [];
+                        $options_value   = $this->getParamGSF( $request, 'options_value' );
                         if(!empty($options_value)){
-							$filter_options = json_decode(stripslashes($options_value),true);
+							$filter_options = is_array($options_value) ? $options_value : json_decode($options_value,true);
 							if(!empty($filter_options) && is_array($filter_options)){
 								foreach($filter_options as $op_key => $op_value){
 									if(strpos($op_key, 'wp_gsf_') === 0){ 
@@ -144,22 +144,33 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
         return json_encode($response);	
     }
 
+    // Get a raw request parameter (REST API params are already unslashed)
+    private function getParamGSF( WP_REST_Request $request, $key, $default = '' ) {
+        $value = $request->get_param( $key );
+        return null === $value ? $default : $value;
+    }
+
+    // Get a request parameter as sanitized text
+    private function getTextParamGSF( WP_REST_Request $request, $key, $default = '' ) {
+        $value = $request->get_param( $key );
+        return null === $value ? $default : sanitize_text_field( $value );
+    }
+
     public function getGSFOrderData($start_date = null, $end_date = null) {
         // Prepare the arguments array
         $args = [
             'limit'        => -1, // To retrieve all orders
             'status'       => 'completed', // You can change this to any order status you need
-            'meta_key'     => '_created_via', // Meta key for order creation method
-            'meta_value'   => 'checkout' // Orders created via checkout
+            'created_via'  => 'checkout' // Orders created via checkout
         ];
     
         // Add the date range if provided
         if ($start_date && $end_date) {
-            $start_date = date('Y-m-d', strtotime($start_date));
-            $end_date   = date('Y-m-d', strtotime($end_date));
+            $start_date = gmdate('Y-m-d', strtotime($start_date));
+            $end_date   = gmdate('Y-m-d', strtotime($end_date));
         } else {
-            $start_date = date('Y-m-d', strtotime('-30 days'));
-            $end_date   = date('Y-m-d');
+            $start_date = gmdate('Y-m-d', strtotime('-30 days'));
+            $end_date   = gmdate('Y-m-d');
         }
 
         $args['date_created'] = $start_date . '...' . $end_date;

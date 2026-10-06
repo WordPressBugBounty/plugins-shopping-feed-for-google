@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 // my-plugin-name/classes/Dependency_Checker.php
 class WP_GSF_Dependency_Checker {
 
@@ -18,7 +19,7 @@ class WP_GSF_Dependency_Checker {
 	public function checkGSF() {
 		$missing_plugins = $this->getMissingPluginsListGSF();
 		if ( ! empty( $missing_plugins ) ) {
-			throw new WP_GSF_Missing_Dependencies_Exception( $missing_plugins );
+			throw new WP_GSF_Missing_Dependencies_Exception( array_map( 'esc_html', $missing_plugins ) );
 		}
 	}
 

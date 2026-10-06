@@ -251,13 +251,9 @@ if (! class_exists('WP_GSF_Category_Webhooks')) {
         /** Cache tt_id → term_id to avoid repeated DB hits during bulk ops. */
         private function resolve_tt_id($tt_id) {
             if (! isset(self::$tt_cache[$tt_id])) {
-                global $wpdb;
-                $term_id = $wpdb->get_var($wpdb->prepare(
-                    "SELECT term_id FROM {$wpdb->term_taxonomy}
-                     WHERE term_taxonomy_id = %d AND taxonomy = 'product_cat'",
-                    $tt_id
-                ));
-                self::$tt_cache[$tt_id] = $term_id ? (int) $term_id : 0;
+                // Core API (WP 4.4+): uses the term object cache instead of a direct query
+                $term = get_term_by('term_taxonomy_id', $tt_id, 'product_cat');
+                self::$tt_cache[$tt_id] = ($term instanceof WP_Term) ? (int) $term->term_id : 0;
             }
             return self::$tt_cache[$tt_id] ?: null;
         }
