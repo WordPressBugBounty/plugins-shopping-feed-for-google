@@ -225,6 +225,22 @@ function addAdminMenuGSF() {
     );
     add_submenu_page(
         $menu_slug,
+        'Tracking Tags',
+        'Tracking Tags',
+        $capability,
+        $menu_slug.'#/google-tracking-tags',
+        $function
+    );
+    add_submenu_page(
+        $menu_slug,
+        'Campaigns',
+        'Campaigns',
+        $capability,
+        $menu_slug.'#/google-performance-max-campaigns',
+        $function
+    );
+    add_submenu_page(
+        $menu_slug,
         'Promotions Feed',
         'Promotions Feed',
         $capability,

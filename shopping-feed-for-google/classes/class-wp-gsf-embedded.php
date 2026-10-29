@@ -18,6 +18,7 @@ if (! class_exists('WP_GSF_EMBEDDED')) {
             }
             
             wp_enqueue_style('gsf-embedded-style', plugin_dir_url(__DIR__) . 'assets/main.css', [], WP_GSF_PLUGIN_VERSION);
+            wp_add_inline_style('gsf-embedded-style', '#wpfooter{display:none;}#wpbody-content{padding-bottom:0}');
             wp_enqueue_script('gsf-embedded-js', plugin_dir_url(__DIR__) . 'assets/main.iife.js', [], WP_GSF_PLUGIN_VERSION, true);
 
             $userData = getUserDataGSF();
@@ -30,7 +31,7 @@ if (! class_exists('WP_GSF_EMBEDDED')) {
                 'associated_user_name' => $userData['display_name'] ?? null,
                 'associated_user_email' => $userData['user_email'] ?? null,
                 'permalink_structure' => get_option('permalink_structure'),
-                'nonce' => wp_create_nonce( 'wp_create_nonce' ),
+                'nonce' => wp_create_nonce( 'wp_rest' ),
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
             ]);
         }

@@ -14,7 +14,52 @@ class WP_GSF_Rest_Controller extends WP_REST_Controller {
             'callback' => array($this,'resetApiAllOptionsGSF'),
             'permission_callback' => '__return_true',
         ) );
-      
+
+        register_rest_route( 'gsf/v1', '/has-plugins', array(
+            'methods'             => 'POST',
+            'callback'            => array( $this, 'hasPluginsGSF' ),
+            'permission_callback' => array( $this, 'verifyNoncePermissionGSF' ),
+        ) );
+    }
+
+    public function verifyNoncePermissionGSF( WP_REST_Request $request ) {
+        $nonce = $request->get_header( 'X-WP-Nonce' );
+        if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+            return new WP_Error(
+                'rest_forbidden',
+                __( 'Invalid or missing nonce.', 'shopping-feed-for-google' ),
+                array( 'status' => 403 )
+            );
+        }
+        return current_user_can( 'manage_options' );
+    }
+
+    public function hasPluginsGSF( WP_REST_Request $request ) {
+        $body           = $request->get_json_params();
+        $requested      = isset( $body['plugins'] ) && is_array( $body['plugins'] ) ? $body['plugins'] : array();
+        $active_plugins = get_option( 'active_plugins', array() );
+
+        // Build a set of active slugs (folder name before the first slash)
+        $active_slugs = array();
+        foreach ( $active_plugins as $plugin_path ) {
+            $slug                  = explode( '/', $plugin_path )[0];
+            $active_slugs[ $slug ] = true;
+        }
+
+        $result = array();
+        foreach ( $requested as $slug ) {
+            $result[] = array(
+                'slug'   => $slug,
+                'status' => isset( $active_slugs[ $slug ] ) ? 'active' : 'not_found',
+            );
+        }
+
+        return rest_ensure_response( array(
+            'success' => true,
+            'message' => 'Plugin status fetched successfully',
+            'data'    => array( 'plugins' => $result ),
+            'error'   => 0,
+        ) );
     }
     
     public function resetApiAllOptionsGSF( WP_REST_Request $request ){
